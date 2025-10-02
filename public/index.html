@@ -8,7 +8,6 @@
 <body>
   <div class="container">
 
-    <!-- Login -->
     <div id="authArea" class="card">
       <h2>🔐 Login</h2>
       <input id="username" placeholder="Username" value="admin">
@@ -17,14 +16,13 @@
       <p class="small">Default: admin / ChangeMe123</p>
     </div>
 
-    <!-- App -->
     <div id="appArea" class="card" style="display:none">
       <h2>📧 Bulk Mail Sender</h2>
 
       <h3>Sender Details</h3>
       <input id="senderName" placeholder="Sender Name (optional)">
       <input id="senderEmail" placeholder="Sender Email (Outlook)">
-      <input id="senderPass" type="password" placeholder="Outlook Password">
+      <input id="senderPass" type="password" placeholder="Outlook App Password">
 
       <h3>Mail Content</h3>
       <input id="subject" placeholder="Subject">
@@ -42,7 +40,6 @@
       <pre id="results" class="result"></pre>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
