@@ -1,4 +1,3 @@
-// Render URL (replace with your deployed URL after deploy)
 const API_BASE = window.location.origin;
 
 async function postJSON(url, data) {
@@ -11,6 +10,7 @@ async function postJSON(url, data) {
   return res.json();
 }
 
+// Login
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -25,12 +25,14 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   }
 });
 
+// Logout
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await postJSON("/api/logout", {});
   document.getElementById("authArea").style.display = "block";
   document.getElementById("appArea").style.display = "none";
 });
 
+// Send Mail
 document.getElementById("sendBtn").addEventListener("click", async () => {
   const senderName = document.getElementById("senderName").value;
   const senderEmail = document.getElementById("senderEmail").value;
@@ -44,9 +46,14 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     return;
   }
 
-  const res = await postJSON("/api/send", {
-    senderName, senderEmail, senderPass, subject, message, recipients
-  });
+  const res = await postJSON("/api/send", { senderName, senderEmail, senderPass, subject, message, recipients });
 
   document.getElementById("results").textContent = JSON.stringify(res, null, 2);
+
+  // Popup alert after sending mails
+  if (res.success) {
+    alert(`Mail sending completed!\n\n${res.results.map(r => `${r.to}: ${r.status}`).join("\n")}`);
+  } else {
+    alert("Mail sending failed!");
+  }
 });
