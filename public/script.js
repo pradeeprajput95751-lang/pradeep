@@ -1,43 +1,49 @@
-const API_BASE = window.location.origin;
-
-async function postJSON(url, data) {
-  const res = await fetch(API_BASE + url, {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    credentials:"include",
-    body:JSON.stringify(data)
-  });
-  return res.json();
+function logout() {
+  fetch('/logout', { method: 'POST' })
+    .then(() => window.location.href = '/');
 }
 
-document.getElementById("loginBtn").addEventListener("click", async()=>{
-  const username=document.getElementById("username").value;
-  const password=document.getElementById("password").value;
-  const res=await postJSON("/api/login",{username,password});
-  if(res.success){document.getElementById("authArea").style.display="none";document.getElementById("appArea").style.display="block";}
-  else alert(res.error||"Login failed");
-});
+document.getElementById('sendBtn')?.addEventListener('click', () => {
+  const senderName = document.getElementById('senderName').value;
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('pass').value.trim();
+  const subject = document.getElementById('subject').value;
+  const message = document.getElementById('message').value;
+  const recipients = document.getElementById('recipients').value.trim();
+  const status = document.getElementById('statusMessage');
 
-document.getElementById("logoutBtn").addEventListener("click", async()=>{
-  await postJSON("/api/logout",{});
-  document.getElementById("authArea").style.display="block";
-  document.getElementById("appArea").style.display="none";
-});
+  if (!email || !password || !recipients) {
+    status.innerText = '❌ Email, password and recipients required';
+    alert('❌ Email, password and recipients required');
+    return;
+  }
 
-document.getElementById("sendBtn").addEventListener("click", async()=>{
-  const senderName=document.getElementById("senderName").value;
-  const senderEmail=document.getElementById("senderEmail").value;
-  const senderPass=document.getElementById("senderPass").value;
-  const subject=document.getElementById("subject").value;
-  const message=document.getElementById("message").value;
-  const recipients=document.getElementById("recipients").value;
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.innerText = '⏳ Sending...';
 
-  if(!senderEmail||!senderPass){alert("Sender Email & Password required");return;}
+  fetch('/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ senderName, email, password, subject, message, recipients })
+  })
+    .then(r => r.json())
+    .then(data => {
+      status.innerText = data.message;
 
-  const res=await postJSON("/api/send",{senderName,senderEmail,senderPass,subject,message,recipients});
-  document.getElementById("results").textContent=JSON.stringify(res,null,2);
+      if (data.success) {
+        alert('✅ Mail sent successfully!');
+      } else {
+        alert('❌ Failed: ' + data.message);
+      }
 
-  if(res.success){
-    alert(`Mail sending completed!\n\n${res.results.map(r=>`${r.to}: ${r.status}`).join("\n")}`);
-  } else alert("Mail sending failed!");
+      btn.disabled = false;
+      btn.innerText = 'Send All';
+    })
+    .catch(err => {
+      status.innerText = '❌ Error: ' + err.message;
+      alert('❌ Error: ' + err.message);
+      btn.disabled = false;
+      btn.innerText = 'Send All';
+    });
 });
