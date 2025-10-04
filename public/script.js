@@ -1,63 +1,40 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("loginForm");
-  const mailForm = document.getElementById("mailForm");
-  const sendBtn = document.getElementById("sendBtn");
+async function post(url, data) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
 
-  // ✅ Login handler
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(loginForm).entries());
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const res = await post("/api/login", { username, password });
+  if (res.success) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  } else alert("Login failed!");
+}
 
-      const res = await fetch("/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+async function logout() {
+  await post("/api/logout", {});
+  location.reload();
+}
 
-      const result = await res.json();
-      if (result.success) {
-        alert("✅ Login successful!");
-        window.location.href = "/launcher";
-      } else {
-        alert("❌ " + result.message);
-      }
-    });
+async function sendMail() {
+  const senderEmail = document.getElementById("senderEmail").value;
+  const senderPass = document.getElementById("senderPass").value;
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("message").value;
+  const recipients = document.getElementById("recipients").value;
+
+  const res = await post("/api/send", { senderEmail, senderPass, subject, message, recipients });
+  if (res.success) {
+    alert("✅ Mail process complete!");
+    document.getElementById("result").textContent = res.results.join("\n");
+  } else {
+    alert("❌ " + res.error);
   }
-
-  // ✅ Mail handler
-  if (mailForm) {
-    mailForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(mailForm).entries());
-
-      if (!data.senderName || !data.senderEmail || !data.appPassword || !data.subject || !data.message || !data.recipients) {
-        alert("⚠ Please fill all fields!");
-        return;
-      }
-
-      sendBtn.disabled = true;
-      sendBtn.style.background = "red";
-      sendBtn.innerText = "Sending...";
-
-      const res = await fetch("/send-mail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      const result = await res.json();
-
-      alert(result.message);
-
-      sendBtn.disabled = false;
-      sendBtn.style.background = "#4285f4";
-      sendBtn.innerText = "Send All";
-    });
-  }
-});
-
-// ✅ Logout
-function logout() {
-  window.location.href = "/logout";
 }
