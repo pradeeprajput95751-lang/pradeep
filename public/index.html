@@ -6,8 +6,13 @@
 </div>
 
 <div id="appBox" style="display:none">
-  <h2>App</h2>
-  <p>Login success!</p>
+  <h2>📨 Bulk Mail Sender</h2>
+  <input id="senderEmail" placeholder="Outlook Email">
+  <input id="senderPass" placeholder="Outlook App Password">
+  <input id="subject" placeholder="Subject">
+  <textarea id="message" placeholder="Message"></textarea>
+  <textarea id="recipients" placeholder="Emails (one per line)"></textarea>
+  <button onclick="sendMail()">Send</button>
+  <button onclick="logout()">Logout</button>
+  <pre id="results"></pre>
 </div>
-
-<script src="script.js"></script>
