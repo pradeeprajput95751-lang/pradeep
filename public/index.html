@@ -4,11 +4,18 @@
   <meta charset="UTF-8" />
   <title>Bulk Mail Sender</title>
   <style>
-    body { font-family: Arial; margin: 40px; }
-    input, textarea { display: block; width: 100%; margin: 10px 0; padding: 8px; }
-    button { padding: 8px 15px; margin-top: 10px; }
+    body { font-family: Arial; margin: 40px; background: #f7f8fc; }
+    input, textarea {
+      display: block; width: 100%; margin: 10px 0; padding: 8px;
+      border-radius: 5px; border: 1px solid #ccc;
+    }
+    button {
+      padding: 8px 15px; margin-top: 10px; cursor: pointer;
+      border: none; border-radius: 5px; background: #007bff; color: white;
+    }
+    button:hover { background: #0056b3; }
     #appBox { display: none; }
-    #results { white-space: pre-line; background: #f8f8f8; padding: 10px; }
+    #results { white-space: pre-line; background: #fff; padding: 10px; border-radius: 5px; }
   </style>
 </head>
 <body>
@@ -21,11 +28,12 @@
 
   <div id="appBox">
     <h2>📨 Bulk Mail Sender</h2>
-    <input id="senderEmail" placeholder="Outlook Email">
+    <input id="senderName" placeholder="Sender Name (Display)">
+    <input id="senderEmail" placeholder="Outlook Email ID">
     <input id="senderPass" type="password" placeholder="Outlook App Password">
     <input id="subject" placeholder="Mail Subject">
-    <textarea id="message" rows="5" placeholder="Message"></textarea>
-    <textarea id="recipients" rows="5" placeholder="Emails (one per line)"></textarea>
+    <textarea id="message" rows="5" placeholder="Type your message here..."></textarea>
+    <textarea id="recipients" rows="5" placeholder="Recipient emails (one per line)"></textarea>
     <button id="sendBtn">Send Emails</button>
     <button id="logoutBtn">Logout</button>
     <h3>Results:</h3>
