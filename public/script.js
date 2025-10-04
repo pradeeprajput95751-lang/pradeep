@@ -15,7 +15,9 @@ document.getElementById("loginBtn").onclick = async () => {
   if (res.success) {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("appBox").style.display = "block";
-  } else alert("❌ Invalid credentials!");
+  } else {
+    alert(res.error || "Login failed!");
+  }
 };
 
 document.getElementById("logoutBtn").onclick = async () => {
@@ -30,7 +32,17 @@ document.getElementById("sendBtn").onclick = async () => {
   const message = document.getElementById("message").value;
   const recipients = document.getElementById("recipients").value;
 
+  if (!senderEmail || !senderPass || !recipients) {
+    alert("Please fill sender email, password, and recipients!");
+    return;
+  }
+
   const res = await postJSON("/api/send", { senderEmail, senderPass, subject, message, recipients });
-  document.getElementById("results").textContent = JSON.stringify(res.results, null, 2);
-  alert("✅ Mails processed. Check results below.");
+
+  if (res.success) {
+    alert("✅ All mails processed!");
+    document.getElementById("results").textContent = res.results.join("\n");
+  } else {
+    alert("❌ Failed: " + (res.error || "Unknown error"));
+  }
 };
