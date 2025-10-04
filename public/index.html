@@ -1,22 +1,24 @@
-<form id="loginForm">
-  <input type="email" id="email" placeholder="Email" required /><br>
-  <input type="password" id="password" placeholder="Password" required /><br>
-  <button>Login</button>
-</form>
-<script>
-document.getElementById('loginForm').onsubmit = async function(e){
-    e.preventDefault();
-    let res = await fetch('/api/login',{
-        method: "POST",
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({email:email.value, password:password.value})
-    });
-    let data = await res.json();
-    if(data.token){
-        localStorage.setItem("token", data.token);
-        window.location = "send.html";
-    }else{
-        alert("Login Failed!");
-    }
-}
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bulk Mail Sender</title>
+</head>
+<body>
+  <div id="loginBox">
+    <h2>Login</h2>
+    <input id="username" placeholder="Username" value="admin" />
+    <input id="password" type="password" placeholder="Password" value="12345" />
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <div id="appBox" style="display:none">
+    <h2>App</h2>
+    <p>Login success!</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- ✅ JS at bottom so DOM loads first -->
+  <script src="script.js"></script>
+</body>
+</html>
