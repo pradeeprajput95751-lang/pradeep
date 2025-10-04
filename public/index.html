@@ -1,89 +1,38 @@
-<!-- public/index.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Bulk Mail Sender</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="page">
-    <div class="card">
-      <h1 class="brand">✉️ Bulk Mail Sender</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bulk Mail Sender</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Yatendra Lodhi</h2>
 
-      <!-- LOGIN -->
-      <div id="loginArea" class="section">
-        <h2>Admin Login</h2>
-        <div class="row">
-          <input id="loginUser" placeholder="Username" value="admin" />
-          <input id="loginPass" placeholder="Password" value="12345" type="password" />
-        </div>
-        <div class="row">
-          <button id="loginBtn" class="btn primary">Login</button>
-        </div>
+      <div class="row">
+        <input id="senderName" placeholder="Sender Name" />
+        <input id="senderEmail" placeholder="Your Gmail" />
+      </div>
+      <div class="row">
+        <input id="senderPass" placeholder="App Password" type="password" />
+        <input id="subject" placeholder="Subject" />
       </div>
 
-      <!-- APP -->
-      <div id="appArea" class="section hidden">
-        <h2>Send Bulk Emails</h2>
+      <div class="row">
+        <textarea id="message" placeholder="Message Body"></textarea>
+        <textarea
+          id="recipients"
+          placeholder="Recipients (comma, newline, semicolon separated)"
+        ></textarea>
+      </div>
 
-        <!-- top row: two columns with two inputs each -->
-        <div class="grid-2">
-          <div class="col">
-            <input id="senderName" placeholder="Sender Name" />
-          </div>
-          <div class="col">
-            <select id="provider">
-              <option value="gmail">Gmail</option>
-              <option value="outlook" selected>Outlook</option>
-              <option value="custom">Custom SMTP</option>
-            </select>
-          </div>
-
-          <div class="col">
-            <input id="senderEmail" placeholder="Your Email (sender)" />
-          </div>
-          <div class="col">
-            <input id="subject" placeholder="Subject" />
-          </div>
-
-          <div class="col">
-            <input id="senderPass" placeholder="App Password / SMTP Password" type="password" />
-          </div>
-          <div class="col">
-            <div id="customConfig" class="hidden">
-              <input id="customHost" placeholder="Custom SMTP Host (e.g. smtp.example.com)" />
-              <input id="customPort" placeholder="Custom SMTP Port (e.g. 587)" />
-            </div>
-          </div>
-        </div>
-
-        <!-- message + recipients side by side -->
-        <div class="grid-2 big">
-          <div class="col">
-            <textarea id="message" placeholder="Message Body"></textarea>
-          </div>
-          <div class="col">
-            <textarea id="recipients" placeholder="Recipients (comma, newline, semicolon separated)"></textarea>
-          </div>
-        </div>
-
-        <!-- buttons -->
-        <div class="row buttons">
-          <button id="sendBtn" class="btn primary">Send All</button>
-          <button id="logoutBtn" class="btn ghost">Logout</button>
-        </div>
-
-        <h3>Results</h3>
-        <pre id="results" class="results"></pre>
+      <div class="buttons">
+        <button id="sendBtn">Send All</button>
+        <button id="logoutBtn">Logout</button>
       </div>
     </div>
-  </div>
 
-  <!-- toast popup -->
-  <div id="toast" class="toast hidden"></div>
-
-  <script src="script.js"></script>
-</body>
+    <div id="popup" class="popup">Mail Sent Successfully!</div>
+    <script src="script.js"></script>
+  </body>
 </html>
