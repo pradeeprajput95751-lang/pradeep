@@ -1,0 +1,25 @@
+<form id="mailForm">
+  <input name="senderName" placeholder="Your Name" required /><br>
+  <input type="email" name="senderEmail" placeholder="Sender Email" required /><br>
+  <input type="password" name="senderPass" placeholder="Sender Email Password" required /><br>
+  <input name="subject" placeholder="Subject" required /><br>
+  <textarea name="template" placeholder="Email Body (HTML Allowed)" required></textarea><br>
+  <input name="clientEmails" placeholder="Recipient Emails comma separated" required /><br>
+  <button>Send Bulk Email</button>
+</form>
+<script>
+document.getElementById('mailForm').onsubmit = async function(e){
+    e.preventDefault();
+    alert("Emails Sending!"); // Simple popup
+    let fd = new FormData(this);
+    let data = {};
+    fd.forEach((v,k)=>data[k]=v);
+    let res = await fetch('/api/sendmail', {
+        method:"POST",
+        headers: {'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem("token")},
+        body: JSON.stringify(data)
+    });
+    let t = await res.text();
+    alert(t);
+}
+</script>
