@@ -11,16 +11,12 @@ async function post(url, data) {
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
-  console.log("🔐 Logging in...", username);
-
   const res = await post("/api/login", { username, password });
-  console.log("Login response:", res);
-
   if (res.success) {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("appBox").style.display = "block";
   } else {
-    alert("Login failed: " + (res.error || "Try again"));
+    alert("❌ Invalid login!");
   }
 }
 
@@ -29,8 +25,37 @@ async function logout() {
   location.reload();
 }
 
-// ✅ Attach click event (fix)
+async function sendMail() {
+  const senderEmail = document.getElementById("senderEmail").value;
+  const senderPass = document.getElementById("senderPass").value;
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("message").value;
+  const recipients = document.getElementById("recipients").value;
+
+  if (!senderEmail || !senderPass || !recipients) {
+    alert("⚠️ Please fill all fields!");
+    return;
+  }
+
+  const res = await post("/api/send", {
+    senderEmail,
+    senderPass,
+    subject,
+    message,
+    recipients,
+  });
+
+  if (res.success) {
+    alert("✅ Mail sending completed!");
+    document.getElementById("results").textContent = res.results.join("\n");
+  } else {
+    alert("❌ Error: " + res.error);
+  }
+}
+
+// Event bindings
 document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("loginBtn");
-  if (btn) btn.addEventListener("click", login);
+  document.getElementById("loginBtn").addEventListener("click", login);
+  document.getElementById("sendBtn").addEventListener("click", sendMail);
+  document.getElementById("logoutBtn").addEventListener("click", logout);
 });
