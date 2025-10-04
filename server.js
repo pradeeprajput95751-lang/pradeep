@@ -9,50 +9,63 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve public folder
 app.use(express.static(path.join(__dirname, "public")));
 
+// Session setup
 app.use(session({
   secret: process.env.SESSION_SECRET || "bulkmailer@123",
   resave: false,
   saveUninitialized: true
 }));
 
-// Hardcoded login
+// Dummy login credentials
 const USER = { username: "admin", password: "12345" };
 
-// ✅ Login API
+// ✅ Route: Serve index.html for root "/"
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ✅ API: Login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === USER.username && password === USER.password) {
     req.session.user = username;
     res.json({ success: true });
   } else {
-    res.json({ success: false, error: "Invalid credentials" });
+    res.json({ success: false, error: "Invalid username or password" });
   }
 });
 
-// ✅ Logout API
+// ✅ API: Logout
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
-// ✅ Mail Send API
+// ✅ API: Send mail
 app.post("/api/send", async (req, res) => {
   if (!req.session.user) return res.status(403).json({ error: "Not logged in" });
 
   const { senderEmail, senderPass, subject, message, recipients } = req.body;
+
   if (!senderEmail || !senderPass || !recipients) {
-    return res.json({ success: false, error: "Missing fields" });
+    return res.json({ success: false, error: "Missing sender or recipient info" });
   }
 
-  const list = recipients.split(/\r?\n/).filter(e => e);
-  if (list.length === 0) return res.json({ success: false, error: "No recipients" });
+  const list = recipients.split(/\r?\n/).map(e => e.trim()).filter(e => e);
+  if (list.length === 0) return res.json({ success: false, error: "No valid recipients" });
 
   const transporter = nodemailer.createTransport({
     host: "smtp.office365.com",
     port: 587,
     secure: false,
-    auth: { user: senderEmail, pass: senderPass }
+    auth: {
+      user: senderEmail,
+      pass: senderPass
+    }
   });
 
   const results = [];
@@ -74,5 +87,5 @@ app.post("/api/send", async (req, res) => {
   res.json({ success: true, results });
 });
 
-// Start server
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// ✅ Start server
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
