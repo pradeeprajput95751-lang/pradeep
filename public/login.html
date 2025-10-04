@@ -2,38 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bulk Mail Sender</title>
+  <title>Login - Yatendra Lodhi</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-
-    <!-- LOGIN BOX -->
-    <div id="loginBox" class="card">
-      <h2>🔐 Login</h2>
-      <input id="username" placeholder="Username" value="admin">
-      <input id="password" type="password" placeholder="Password" value="12345">
-      <button id="loginBtn">Login</button>
-      <p class="note">Default: admin / 12345</p>
-    </div>
-
-    <!-- APP BOX -->
-    <div id="appBox" class="card" style="display:none">
-      <h2>📧 Bulk Mail Sender</h2>
-      <input id="senderEmail" placeholder="Outlook Email">
-      <input id="senderPass" type="password" placeholder="Outlook App Password">
-      <input id="subject" placeholder="Subject">
-      <textarea id="message" rows="4" placeholder="Type your message..."></textarea>
-      <textarea id="recipients" rows="5" placeholder="Enter emails (one per line)"></textarea>
-
-      <div class="btns">
-        <button id="sendBtn">Send Emails</button>
-        <button id="logoutBtn">Logout</button>
-      </div>
-
-      <pre id="results"></pre>
-    </div>
-
+    <h2>🔐 Login</h2>
+    <form id="loginForm">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p id="loginMsg"></p>
   </div>
   <script src="script.js"></script>
 </body>
