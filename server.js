@@ -1,125 +1,67 @@
-// server.js
-require('dotenv').config();
-const express = require('express');
-const session = require('express-session');
-const bodyParser = require('body-parser');
-const nodemailer = require('nodemailer');
-const path = require('path');
+const express = require("express");
+const nodemailer = require("nodemailer");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
-// 🔑 Hardcoded login
-const HARD_USERNAME = "Love Rajput";
-const HARD_PASSWORD = "Love882@#";
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json({ limit: "2mb" }));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(session({
-  secret: 'bulk-mailer-secret',
+  secret: process.env.SESSION_SECRET || "bulkmailer@123",
   resave: false,
   saveUninitialized: true
 }));
 
-// 🔒 Auth middleware
-function requireAuth(req, res, next) {
-  if (req.session.user) return next();
-  return res.redirect('/');
-}
+const USER = { username: "admin", password: "12345" };
 
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-app.post('/login', (req, res) => {
+// ✅ Login
+app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  if (username === HARD_USERNAME && password === HARD_PASSWORD) {
+  if (username === USER.username && password === USER.password) {
     req.session.user = username;
-    return res.json({ success: true });
-  }
-  return res.json({ success: false, message: "❌ Invalid credentials" });
+    res.json({ success: true });
+  } else res.json({ success: false, error: "Invalid credentials" });
 });
 
-app.get('/launcher', requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'launcher.html'));
+// ✅ Logout
+app.post("/api/logout", (req, res) => {
+  req.session.destroy(() => res.json({ success: true }));
 });
 
-app.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie('connect.sid');
-    return res.json({ success: true });
+// ✅ Mail Send
+app.post("/api/send", async (req, res) => {
+  if (!req.session.user) return res.status(403).json({ error: "Not logged in" });
+
+  const { senderEmail, senderPass, subject, message, recipients } = req.body;
+  const list = recipients.split(/\r?\n/).filter(e => e);
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.office365.com",
+    port: 587,
+    secure: false,
+    auth: { user: senderEmail, pass: senderPass },
   });
-});
 
-// Helper function for delay
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Helper function for batch sending
-async function sendBatch(transporter, mails, batchSize = 5) {
   const results = [];
-  for (let i = 0; i < mails.length; i += batchSize) {
-    const batch = mails.slice(i, i + batchSize);
-    const promises = batch.map(mail => transporter.sendMail(mail));
-    const settled = await Promise.allSettled(promises);
-    results.push(...settled);
-
-    // Small pause between batches to avoid Gmail rate-limit
-    await delay(200); // 0.2 sec pause
-  }
-  return results;
-}
-
-// ✅ Bulk Mail Sender with fast batch sending
-app.post('/send', requireAuth, async (req, res) => {
-  try {
-    const { senderName, email, password, recipients, subject, message } = req.body;
-    if (!email || !password || !recipients) {
-      return res.json({ success: false, message: "Email, password and recipients required" });
+  for (const to of list) {
+    try {
+      await transporter.sendMail({
+        from: senderEmail,
+        to,
+        subject,
+        text: message,
+      });
+      results.push(`${to} ✅`);
+    } catch (err) {
+      results.push(`${to} ❌ ${err.message}`);
     }
-
-    const recipientList = recipients
-      .split(/[\n,]+/)
-      .map(r => r.trim())
-      .filter(r => r);
-
-    if (recipientList.length === 0) {
-      return res.json({ success: false, message: "No valid recipients" });
-    }
-
-    // ✅ Single transporter
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: { user: email, pass: password }
-    });
-
-    // Prepare mails
-    const mails = recipientList.map(r => ({
-      from: "${senderName || 'Anonymous'}" <${email}>,
-      to: r,
-      subject: subject || "No Subject",
-      text: message || ""
-    }));
-
-    // Send mails in batches (parallel within batch)
-    await sendBatch(transporter, mails, 5); // 5 mails parallel
-
-    return res.json({ success: true, message: ✅ Mail sent to ${recipientList.length} });
-
-  } catch (err) {
-    console.error("Send error:", err);
-    return res.json({ success: false, message: err.message });
   }
+
+  res.json({ success: true, results });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(🚀 Server running on port ${PORT});
-});
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
