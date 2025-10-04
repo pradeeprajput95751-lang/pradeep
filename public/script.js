@@ -8,6 +8,14 @@ async function post(url, data) {
   return res.json();
 }
 
+function showPopup(msg, color = "#4CAF50") {
+  const popup = document.getElementById("popup");
+  popup.textContent = msg;
+  popup.style.background = color;
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 3000);
+}
+
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -16,7 +24,7 @@ async function login() {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("appBox").style.display = "block";
   } else {
-    alert("❌ Invalid login!");
+    showPopup("❌ Invalid Login!", "red");
   }
 }
 
@@ -34,7 +42,7 @@ async function sendMail() {
   const recipients = document.getElementById("recipients").value;
 
   if (!senderEmail || !senderPass || !recipients) {
-    alert("⚠️ Please fill all fields!");
+    showPopup("⚠️ Please fill all fields!", "orange");
     return;
   }
 
@@ -48,10 +56,10 @@ async function sendMail() {
   });
 
   if (res.success) {
-    alert("✅ All mails processed successfully!");
     document.getElementById("results").textContent = res.results.join("\n");
+    showPopup("✅ Mails Sent Successfully!");
   } else {
-    alert("❌ Error: " + res.error);
+    showPopup("❌ " + res.error, "red");
   }
 }
 
