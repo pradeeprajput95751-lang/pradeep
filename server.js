@@ -1,98 +1,108 @@
 const express = require("express");
-const nodemailer = require("nodemailer");
 const session = require("express-session");
 const bodyParser = require("body-parser");
+const nodemailer = require("nodemailer");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// ✅ Correct public path (works both locally & Render)
-const publicPath = path.join(__dirname, "public");
-console.log("🧩 Serving static from:", publicPath);
 
 // Middleware
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(publicPath));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "bulkmailer@123",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.use(session({
+  secret: "bulkmail_secret",
+  resave: false,
+  saveUninitialized: false
+}));
 
-// Dummy login
-const USER = { username: "admin", password: "12345" };
+// Static files
+app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Root route (fixed)
+// ✅ Root route → login.html
 app.get("/", (req, res) => {
-  res.sendFile(path.join(publicPath, "index.html"));
+  res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
 // ✅ Login
-app.post("/api/login", (req, res) => {
+app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  if (username === USER.username && password === USER.password) {
+  const AUTH_USER = "Lodhiyatendra";
+  const AUTH_PASS = "lodhi882@#";
+
+  if (username === AUTH_USER && password === AUTH_PASS) {
     req.session.user = username;
     res.json({ success: true });
   } else {
-    res.json({ success: false, error: "Invalid username or password" });
+    res.json({ success: false, message: "Invalid credentials" });
   }
+});
+
+// ✅ Launcher
+app.get("/launcher", (req, res) => {
+  if (!req.session.user) return res.redirect("/");
+  res.sendFile(path.join(__dirname, "public", "launcher.html"));
 });
 
 // ✅ Logout
-app.post("/api/logout", (req, res) => {
-  req.session.destroy(() => res.json({ success: true }));
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
 });
 
-// ✅ Send Email
-app.post("/api/send", async (req, res) => {
-  if (!req.session.user) return res.status(403).json({ error: "Not logged in" });
+// ✅ Delay for fast bulk (~30ms each)
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const { senderEmail, senderPass, subject, message, recipients } = req.body;
-  if (!senderEmail || !senderPass || !recipients)
-    return res.json({ success: false, error: "Missing details" });
+// ✅ Bulk Mail Sender (each recipient gets own "To")
+app.post("/send-mail", async (req, res) => {
+  try {
+    const { senderName, senderEmail, appPassword, subject, message, recipients } = req.body;
 
-  const list = recipients.split(/\r?\n/).map(e => e.trim()).filter(Boolean);
-  if (list.length === 0)
-    return res.json({ success: false, error: "No recipients found" });
-
-  // ✅ Use direct SMTP (for Outlook)
-  const transporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: senderEmail,
-      pass: senderPass,
-    },
-  });
-
-  const results = [];
-  for (const to of list) {
-    try {
-      await transporter.sendMail({
-        from: senderEmail,
-        to,
-        subject: subject || "(No Subject)",
-        text: message || "",
-      });
-      results.push(`${to} ✅ Sent`);
-    } catch (err) {
-      results.push(`${to} ❌ Failed: ${err.message}`);
+    if (!senderName || !senderEmail || !appPassword || !subject || !message || !recipients) {
+      return res.json({ success: false, message: "⚠ Please fill all fields before sending." });
     }
+
+    let recipientList = recipients
+      .split(/[\n,;,\s]+/)
+      .map(r => r.trim())
+      .filter(r => r.length > 0);
+
+    if (recipientList.length === 0) {
+      return res.json({ success: false, message: "❌ No valid recipient emails found." });
+    }
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: senderEmail,
+        pass: appPassword
+      }
+    });
+
+    for (let i = 0; i < recipientList.length; i++) {
+      let mailOptions = {
+        from: "${senderName}" <${senderEmail}>,
+        to: recipientList[i],   // ✅ Each mail shows current recipient
+        subject,
+        text: message,
+        html: <div style="font-family: Arial, sans-serif; white-space: pre-wrap;">${message}</div>
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log(✅ Sent to ${recipientList[i]});
+
+      if (i < recipientList.length - 1) {
+        await delay(30); // fast delay
+      }
+    }
+
+    res.json({ success: true, message: ✅ ${recipientList.length} mails sent successfully (each mail shows its own To:) });
+  } catch (err) {
+    console.error("Mail Error:", err);
+    res.json({ success: false, message: "❌ Mail sending failed: " + err.message });
   }
-
-  res.json({ success: true, results });
 });
 
-// ✅ For unknown routes (Render fallback)
-app.use((req, res) => {
-  res.sendFile(path.join(publicPath, "index.html"));
-});
-
-// ✅ Start server
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// ✅ Port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(🚀 Server running on port ${PORT}));
