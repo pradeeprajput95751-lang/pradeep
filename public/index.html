@@ -1,21 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Bulk Mail Sender</title>
   <style>
-    body { font-family: Arial; margin: 40px; background: #f7f8fc; }
-    input, textarea {
-      display: block; width: 100%; margin: 10px 0; padding: 8px;
-      border-radius: 5px; border: 1px solid #ccc;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      padding: 40px;
+    }
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     button {
-      padding: 8px 15px; margin-top: 10px; cursor: pointer;
-      border: none; border-radius: 5px; background: #007bff; color: white;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
     button:hover { background: #0056b3; }
     #appBox { display: none; }
-    #results { white-space: pre-line; background: #fff; padding: 10px; border-radius: 5px; }
+
+    /* Popup Styling */
+    #popup {
+      visibility: hidden;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 6px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-weight: bold;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      transition: 0.3s;
+    }
+    #popup.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein { from {opacity: 0;} to {opacity: 1;} }
+    @keyframes fadeout { from {opacity: 1;} to {opacity: 0;} }
   </style>
 </head>
 <body>
@@ -27,18 +57,20 @@
   </div>
 
   <div id="appBox">
-    <h2>📨 Bulk Mail Sender</h2>
+    <h2>📧 Bulk Mail Sender</h2>
     <input id="senderName" placeholder="Sender Name (Display)">
     <input id="senderEmail" placeholder="Outlook Email ID">
     <input id="senderPass" type="password" placeholder="Outlook App Password">
-    <input id="subject" placeholder="Mail Subject">
-    <textarea id="message" rows="5" placeholder="Type your message here..."></textarea>
-    <textarea id="recipients" rows="5" placeholder="Recipient emails (one per line)"></textarea>
+    <input id="subject" placeholder="Email Subject">
+    <textarea id="message" rows="5" placeholder="Message content..."></textarea>
+    <textarea id="recipients" rows="5" placeholder="Enter recipient emails (one per line)"></textarea>
     <button id="sendBtn">Send Emails</button>
     <button id="logoutBtn">Logout</button>
     <h3>Results:</h3>
     <pre id="results"></pre>
   </div>
+
+  <div id="popup">✅ Mails Sent Successfully!</div>
 
   <script src="script.js"></script>
 </body>
