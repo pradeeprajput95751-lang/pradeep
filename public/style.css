@@ -1,35 +1,74 @@
+/* public/style.css - clean centered card, two column grid like screenshot */
+* { box-sizing: border-box; }
 body {
-  font-family: Arial, sans-serif;
-  background: #f6f6f6;
+  font-family: Inter, Arial, sans-serif;
+  background: #eef3f7;
   margin: 0;
+  padding: 40px 20px;
 }
-
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-}
-
+.page { display:flex; align-items:center; justify-content:center; min-height: calc(100vh - 80px); }
 .card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-input, textarea {
   width: 100%;
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  max-width: 1100px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(20,30,60,0.08);
+}
+.brand { text-align:center; margin:0 0 18px; font-size:22px; }
+.section { margin-top: 8px; }
+.row { display:flex; gap:12px; margin-top:10px; }
+.row input { flex:1; }
+.grid-2 {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+.grid-2.big { margin-top: 18px; }
+.col input, .col select, .col textarea, .col .custom {
+  width: 100%;
+}
+input, select, textarea {
+  padding: 12px 14px;
+  border: 1px solid #e0e6ee;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fbfdff;
+  outline: none;
+}
+textarea { min-height:160px; resize:vertical; }
+.hidden { display:none; }
+.buttons { margin-top: 14px; }
+.btn {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight:600;
+  cursor:pointer;
+  border: none;
+}
+.btn.primary { background:#2f8cff; color:#fff; flex:1; }
+.btn.ghost { background:#f3f6fb; color:#1f2a44; border:1px solid #e6edf6; flex:1; }
+.results {
+  background:#f8fafc;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #eef3f7;
+  max-height: 220px;
+  overflow:auto;
 }
 
-button {
-  background: #0078d4;
-  color: #fff;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 6px;
-  margin-top: 10px;
-  cursor: pointer;
+/* toast */
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: #22c55e;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(20,30,60,0.12);
+  font-weight:700;
 }
+.toast.hidden { opacity:0; transform:translateY(-8px); pointer-events:none; transition:0.25s; }
+.toast.show { opacity:1; transform:translateY(0); pointer-events:auto; transition:0.25s; }
