@@ -1,49 +1,38 @@
-function logout() {
-  fetch('/logout', { method: 'POST' })
-    .then(() => window.location.href = '/');
+async function postJSON(url, data) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data)
+  });
+  return res.json();
 }
 
-document.getElementById('sendBtn')?.addEventListener('click', () => {
-  const senderName = document.getElementById('senderName').value;
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('pass').value.trim();
-  const subject = document.getElementById('subject').value;
-  const message = document.getElementById('message').value;
-  const recipients = document.getElementById('recipients').value.trim();
-  const status = document.getElementById('statusMessage');
+document.getElementById("loginBtn").onclick = async () => {
+  const username = username.value;
+  const password = document.getElementById("password").value;
+  const res = await postJSON("/api/login", { username, password });
+  if (res.success) {
+    document.querySelector(".card").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  } else alert("Login failed!");
+};
 
-  if (!email || !password || !recipients) {
-    status.innerText = '❌ Email, password and recipients required';
-    alert('❌ Email, password and recipients required');
-    return;
-  }
+document.getElementById("logoutBtn").onclick = async () => {
+  await postJSON("/api/logout", {});
+  location.reload();
+};
 
-  const btn = document.getElementById('sendBtn');
-  btn.disabled = true;
-  btn.innerText = '⏳ Sending...';
+document.getElementById("sendBtn").onclick = async () => {
+  const senderEmail = document.getElementById("senderEmail").value;
+  const senderPass = document.getElementById("senderPass").value;
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("message").value;
+  const recipients = document.getElementById("recipients").value;
 
-  fetch('/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ senderName, email, password, subject, message, recipients })
-  })
-    .then(r => r.json())
-    .then(data => {
-      status.innerText = data.message;
+  const res = await postJSON("/api/send", { senderEmail, senderPass, subject, message, recipients });
+  document.getElementById("results").textContent = JSON.stringify(res, null, 2);
 
-      if (data.success) {
-        alert('✅ Mail sent successfully!');
-      } else {
-        alert('❌ Failed: ' + data.message);
-      }
-
-      btn.disabled = false;
-      btn.innerText = 'Send All';
-    })
-    .catch(err => {
-      status.innerText = '❌ Error: ' + err.message;
-      alert('❌ Error: ' + err.message);
-      btn.disabled = false;
-      btn.innerText = 'Send All';
-    });
-});
+  if (res.success) alert("✅ All mails processed!");
+  else alert("❌ Error sending mails.");
+};
