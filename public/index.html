@@ -3,22 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <title>Bulk Mail Sender</title>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    input, textarea { display: block; width: 100%; margin: 10px 0; padding: 8px; }
+    button { padding: 8px 15px; margin-top: 10px; }
+    #appBox { display: none; }
+    #results { white-space: pre-line; background: #f8f8f8; padding: 10px; }
+  </style>
 </head>
 <body>
   <div id="loginBox">
     <h2>Login</h2>
-    <input id="username" placeholder="Username" value="admin" />
-    <input id="password" type="password" placeholder="Password" value="12345" />
+    <input id="username" placeholder="Username" value="admin">
+    <input id="password" type="password" placeholder="Password" value="12345">
     <button id="loginBtn">Login</button>
   </div>
 
-  <div id="appBox" style="display:none">
-    <h2>App</h2>
-    <p>Login success!</p>
-    <button onclick="logout()">Logout</button>
+  <div id="appBox">
+    <h2>📨 Bulk Mail Sender</h2>
+    <input id="senderEmail" placeholder="Outlook Email">
+    <input id="senderPass" type="password" placeholder="Outlook App Password">
+    <input id="subject" placeholder="Mail Subject">
+    <textarea id="message" rows="5" placeholder="Message"></textarea>
+    <textarea id="recipients" rows="5" placeholder="Emails (one per line)"></textarea>
+    <button id="sendBtn">Send Emails</button>
+    <button id="logoutBtn">Logout</button>
+    <h3>Results:</h3>
+    <pre id="results"></pre>
   </div>
 
-  <!-- ✅ JS at bottom so DOM loads first -->
   <script src="script.js"></script>
 </body>
 </html>
