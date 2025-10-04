@@ -22,12 +22,12 @@ app.use(
 
 const USER = { username: "admin", password: "12345" };
 
-// Serve index
+// Serve frontend
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Login
+// Login API
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === USER.username && password === USER.password) {
@@ -38,19 +38,24 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// Logout
+// Logout API
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
-// Send mail
+// ✅ Send mail API
 app.post("/api/send", async (req, res) => {
   if (!req.session.user) return res.status(403).json({ error: "Not logged in" });
 
-  const { senderEmail, senderPass, subject, message, recipients } = req.body;
+  const { senderName, senderEmail, senderPass, subject, message, recipients } = req.body;
+
+  if (!senderEmail || !senderPass) {
+    return res.status(400).json({ error: "Missing sender credentials" });
+  }
 
   const emails = recipients.split(/\r?\n/).map((e) => e.trim()).filter(Boolean);
 
+  // Create mail transporter (for Outlook)
   const transporter = nodemailer.createTransport({
     host: "smtp.office365.com",
     port: 587,
@@ -59,10 +64,11 @@ app.post("/api/send", async (req, res) => {
   });
 
   const results = [];
+
   for (const email of emails) {
     try {
       await transporter.sendMail({
-        from: senderEmail,
+        from: `"${senderName}" <${senderEmail}>`,
         to: email,
         subject,
         text: message,
