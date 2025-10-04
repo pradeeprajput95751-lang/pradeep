@@ -26,6 +26,7 @@ async function logout() {
 }
 
 async function sendMail() {
+  const senderName = document.getElementById("senderName").value;
   const senderEmail = document.getElementById("senderEmail").value;
   const senderPass = document.getElementById("senderPass").value;
   const subject = document.getElementById("subject").value;
@@ -38,6 +39,7 @@ async function sendMail() {
   }
 
   const res = await post("/api/send", {
+    senderName,
     senderEmail,
     senderPass,
     subject,
@@ -46,14 +48,13 @@ async function sendMail() {
   });
 
   if (res.success) {
-    alert("✅ Mail sending completed!");
+    alert("✅ All mails processed successfully!");
     document.getElementById("results").textContent = res.results.join("\n");
   } else {
     alert("❌ Error: " + res.error);
   }
 }
 
-// Event bindings
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("loginBtn").addEventListener("click", login);
   document.getElementById("sendBtn").addEventListener("click", sendMail);
