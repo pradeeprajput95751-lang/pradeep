@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -7,76 +8,102 @@ const nodemailer = require("nodemailer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Static files
-app.use(express.static(path.join(__dirname, "public")));
+const publicPath = path.join(__dirname, "public");
+app.use(express.static(publicPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: "bulkmailer@123",
+    secret: process.env.SESSION_SECRET || "bulkmailer@123",
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
   })
 );
 
-// Login user
-const USER = { username: "admin", password: "12345" };
+// Simple admin (change for production)
+const USER = {
+  username: process.env.ADMIN_USER || "admin",
+  password: process.env.ADMIN_PASS || "12345",
+};
 
+// serve index
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(publicPath, "index.html"));
 });
 
+// login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === USER.username && password === USER.password) {
     req.session.user = username;
-    res.json({ success: true });
-  } else {
-    res.json({ success: false, error: "Invalid credentials" });
+    return res.json({ success: true });
   }
+  return res.json({ success: false, error: "Invalid credentials" });
 });
 
+// logout
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
+// send mail
 app.post("/api/send", async (req, res) => {
   if (!req.session.user) return res.status(403).json({ error: "Not logged in" });
 
-  const { senderName, senderEmail, senderPass, subject, message, recipients } = req.body;
+  const {
+    provider,     // 'gmail' | 'outlook' | 'custom'
+    customHost,
+    customPort,
+    senderName,
+    senderEmail,
+    senderPass,
+    subject,
+    message,
+    recipients,
+  } = req.body;
 
-  try {
-    const emails = recipients.split(/\r?\n/).map((e) => e.trim()).filter(Boolean);
+  if (!senderEmail || !senderPass || !recipients) {
+    return res.status(400).json({ success: false, error: "Missing required fields" });
+  }
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.office365.com", // Outlook SMTP
+  // Parse recipients - allow comma, semicolon, newline separation
+  const list = recipients
+    .split(/[\n,;]+/)
+    .map((r) => r.trim())
+    .filter(Boolean);
+
+  if (list.length === 0) {
+    return res.status(400).json({ success: false, error: "No valid recipients" });
+  }
+
+  // Choose transporter config
+  let transporterConfig;
+  if (provider === "gmail") {
+    transporterConfig = {
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: { user: senderEmail, pass: senderPass },
-    });
-
-    const results = [];
-    for (const email of emails) {
-      try {
-        await transporter.sendMail({
-          from: `"${senderName}" <${senderEmail}>`,
-          to: email,
-          subject,
-          text: message,
-        });
-        results.push(`${email} ✅ Sent`);
-      } catch (err) {
-        results.push(`${email} ❌ ${err.message}`);
-      }
-    }
-
-    res.json({ success: true, results });
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, error: err.message });
+    };
+  } else if (provider === "outlook") {
+    transporterConfig = {
+      host: "smtp.office365.com",
+      port: 587,
+      secure: false,
+      auth: { user: senderEmail, pass: senderPass },
+    };
+  } else {
+    // custom
+    transporterConfig = {
+      host: customHost || "smtp.example.com",
+      port: customPort ? parseInt(customPort, 10) : 587,
+      secure: false,
+      auth: { user: senderEmail, pass: senderPass },
+    };
   }
-});
 
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+  let transporter;
+  try {
+    transporter = nodemailer.
