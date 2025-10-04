@@ -1,20 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Login - Yatendra Lodhi</title>
+  <title>Bulk Mail Sender</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h2>🔐 Login</h2>
-    <form id="loginForm">
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-    <p id="loginMsg"></p>
+  <div class="card" id="login">
+    <h2>Login</h2>
+    <input id="username" placeholder="Username" value="admin">
+    <input id="password" type="password" placeholder="Password" value="12345">
+    <button onclick="login()">Login</button>
   </div>
+
+  <div class="card" id="app" style="display:none;">
+    <h2>Send Mails</h2>
+    <input id="senderEmail" placeholder="Outlook Email">
+    <input id="senderPass" type="password" placeholder="Outlook App Password">
+    <input id="subject" placeholder="Subject">
+    <textarea id="message" rows="3" placeholder="Message..."></textarea>
+    <textarea id="recipients" rows="5" placeholder="Emails (one per line)"></textarea>
+    <button onclick="sendMail()">Send</button>
+    <button onclick="logout()">Logout</button>
+    <pre id="result"></pre>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
