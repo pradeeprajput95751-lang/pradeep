@@ -7,29 +7,32 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Correct public path (works both locally & Render)
+const publicPath = path.join(__dirname, "public");
+console.log("🧩 Serving static from:", publicPath);
+
 // Middleware
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(publicPath));
 
-// Serve public folder
-app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "bulkmailer@123",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-// Session setup
-app.use(session({
-  secret: process.env.SESSION_SECRET || "bulkmailer@123",
-  resave: false,
-  saveUninitialized: true
-}));
-
-// Dummy login credentials
+// Dummy login
 const USER = { username: "admin", password: "12345" };
 
-// ✅ Route: Serve index.html for root "/"
+// ✅ Root route (fixed)
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(publicPath, "index.html"));
 });
 
-// ✅ API: Login
+// ✅ Login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === USER.username && password === USER.password) {
@@ -40,43 +43,42 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// ✅ API: Logout
+// ✅ Logout
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
-// ✅ API: Send mail
+// ✅ Send Email
 app.post("/api/send", async (req, res) => {
   if (!req.session.user) return res.status(403).json({ error: "Not logged in" });
 
   const { senderEmail, senderPass, subject, message, recipients } = req.body;
+  if (!senderEmail || !senderPass || !recipients)
+    return res.json({ success: false, error: "Missing details" });
 
-  if (!senderEmail || !senderPass || !recipients) {
-    return res.json({ success: false, error: "Missing sender or recipient info" });
-  }
+  const list = recipients.split(/\r?\n/).map(e => e.trim()).filter(Boolean);
+  if (list.length === 0)
+    return res.json({ success: false, error: "No recipients found" });
 
-  const list = recipients.split(/\r?\n/).map(e => e.trim()).filter(e => e);
-  if (list.length === 0) return res.json({ success: false, error: "No valid recipients" });
-
+  // ✅ Use direct SMTP (for Outlook)
   const transporter = nodemailer.createTransport({
     host: "smtp.office365.com",
     port: 587,
     secure: false,
     auth: {
       user: senderEmail,
-      pass: senderPass
-    }
+      pass: senderPass,
+    },
   });
 
   const results = [];
-
   for (const to of list) {
     try {
       await transporter.sendMail({
         from: senderEmail,
         to,
         subject: subject || "(No Subject)",
-        text: message || ""
+        text: message || "",
       });
       results.push(`${to} ✅ Sent`);
     } catch (err) {
@@ -85,6 +87,11 @@ app.post("/api/send", async (req, res) => {
   }
 
   res.json({ success: true, results });
+});
+
+// ✅ For unknown routes (Render fallback)
+app.use((req, res) => {
+  res.sendFile(path.join(publicPath, "index.html"));
 });
 
 // ✅ Start server
