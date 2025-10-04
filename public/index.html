@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bulk Mail Sender</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div id="loginBox" class="card">
+      <h2>🔐 Login</h2>
+      <input id="username" placeholder="Username" value="admin" />
+      <input id="password" type="password" placeholder="Password" value="12345" />
+      <button id="loginBtn">Login</button>
+    </div>
+
+    <div id="appBox" class="card" style="display:none">
+      <h2>📨 Bulk Mail Sender</h2>
+      <input id="senderEmail" placeholder="Outlook Email" />
+      <input id="senderPass" type="password" placeholder="Outlook App Password" />
+      <input id="subject" placeholder="Subject" />
+      <textarea id="message" placeholder="Your message..."></textarea>
+      <textarea id="recipients" placeholder="Emails (one per line)"></textarea>
+      <button id="sendBtn">Send</button>
+      <button id="logoutBtn">Logout</button>
+      <pre id="results"></pre>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
