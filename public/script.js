@@ -9,13 +9,13 @@ async function postJSON(url, data) {
 }
 
 document.getElementById("loginBtn").onclick = async () => {
-  const username = username.value;
+  const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   const res = await postJSON("/api/login", { username, password });
   if (res.success) {
-    document.querySelector(".card").style.display = "none";
-    document.getElementById("app").style.display = "block";
-  } else alert("Login failed!");
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("appBox").style.display = "block";
+  } else alert("❌ Invalid credentials!");
 };
 
 document.getElementById("logoutBtn").onclick = async () => {
@@ -31,8 +31,6 @@ document.getElementById("sendBtn").onclick = async () => {
   const recipients = document.getElementById("recipients").value;
 
   const res = await postJSON("/api/send", { senderEmail, senderPass, subject, message, recipients });
-  document.getElementById("results").textContent = JSON.stringify(res, null, 2);
-
-  if (res.success) alert("✅ All mails processed!");
-  else alert("❌ Error sending mails.");
+  document.getElementById("results").textContent = JSON.stringify(res.results, null, 2);
+  alert("✅ Mails processed. Check results below.");
 };
