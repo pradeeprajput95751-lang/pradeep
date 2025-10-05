@@ -27,7 +27,7 @@ app.use(
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "12345";
 
-// 🟢 LOGIN API
+// 🔹 LOGIN
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
@@ -38,58 +38,50 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// 🟢 CHECK LOGIN
-app.get("/api/check", (req, res) => {
-  if (req.session.user) res.json({ loggedIn: true });
-  else res.json({ loggedIn: false });
-});
-
-// 🟢 SEND MAIL
+// 🔹 SEND MAIL
 app.post("/api/send", async (req, res) => {
-  if (!req.session.user) return res.status(403).json({ success: false, message: "Not logged in" });
+  if (!req.session.user)
+    return res.status(403).json({ success: false, message: "Not logged in" });
 
   const { senderName, email, password, subject, message, recipients } = req.body;
-  const emails = recipients.split(",").map(e => e.trim()).filter(Boolean);
 
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: { user: email, pass: password },
+      service: "gmail",
+      auth: { user: email, pass: password }
     });
 
-    for (const to of emails) {
+    const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
+
+    for (const to of emailList) {
       await transporter.sendMail({
         from: `"${senderName}" <${email}>`,
         to,
         subject,
-        text: message,
+        text: message
       });
     }
 
-    res.json({ success: true, sent: emails.length });
+    res.json({ success: true, sent: emailList.length });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Failed to send" });
+    console.error("Send error:", err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// 🟢 LOGOUT
+// 🔹 LOGOUT
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
-// 🟢 ROUTES
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
-});
-
+// 🔹 ROUTES
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
 app.get("/launcher", (req, res) => {
-  if (req.session.user) res.sendFile(path.join(__dirname, "public", "launcher.html"));
-  else res.redirect("/");
+  if (req.session.user)
+    res.sendFile(path.join(__dirname, "public", "launcher.html"));
+  else
+    res.redirect("/");
 });
 
-// 🟢 START SERVER
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
