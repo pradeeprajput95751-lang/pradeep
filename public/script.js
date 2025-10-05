@@ -22,6 +22,7 @@ document.getElementById("logout").onclick = async () => {
 };
 
 document.getElementById("send").onclick = async () => {
+  const senderName = senderNameEl.value.trim();
   const senderEmail = email.value.trim();
   const senderPass = pass.value.trim();
   const subject = document.getElementById("subject").value;
@@ -33,6 +34,7 @@ document.getElementById("send").onclick = async () => {
 
   toast("Sending emails...");
   const res = await post("/api/send", {
+    senderName,
     senderEmail,
     senderPass,
     subject,
@@ -45,3 +47,6 @@ document.getElementById("send").onclick = async () => {
     result.textContent = JSON.stringify(res.sent, null, 2);
   } else toast(`❌ ${res.error}`, false);
 };
+
+// fix missing reference
+const senderNameEl = document.getElementById("senderName");
