@@ -31,6 +31,7 @@ app.use(
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "12345";
 
+// login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body || {};
   if (username === ADMIN_USER && password === ADMIN_PASS) {
@@ -40,32 +41,32 @@ app.post("/api/login", (req, res) => {
   return res.status(401).json({ success: false, error: "Invalid credentials" });
 });
 
+// logout
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
+// send
 app.post("/api/send", async (req, res) => {
-  if (!req.session.user)
-    return res.status(403).json({ success: false, error: "Not logged in" });
+  if (!req.session.user) return res.status(403).json({ success: false, error: "Not logged in" });
 
-  const { senderEmail, senderPass, senderName, subject, message, recipients } = req.body;
+  const { senderEmail, senderPass, senderName, subject, message, recipients } = req.body || {};
   if (!senderEmail || !senderPass || !recipients)
-    return res
-      .status(400)
-      .json({ success: false, error: "Missing required fields" });
+    return res.status(400).json({ success: false, error: "Missing required fields" });
 
   const list = recipients
     .split(/[\n,;]+/)
     .map((x) => x.trim())
     .filter(Boolean);
 
+  // create transporter (Gmail App Password expected)
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: { user: senderEmail, pass: senderPass }
   });
 
-  const delay = 200; // fixed 0.2 sec between mails
-  const sent = [];
+  const delay = 200; // fixed 200ms between mails
+  const results = [];
 
   for (const to of list.slice(0, 30)) {
     try {
@@ -75,23 +76,21 @@ app.post("/api/send", async (req, res) => {
         subject,
         text: message
       });
-      sent.push({ to, ok: true });
+      results.push({ to, ok: true });
     } catch (err) {
-      sent.push({ to, ok: false, err: err.message });
+      results.push({ to, ok: false, error: err.message });
     }
+    // delay
     await new Promise((r) => setTimeout(r, delay));
   }
 
-  res.json({ success: true, count: sent.filter((x) => x.ok).length, sent });
+  const successCount = results.filter(r => r.ok).length;
+  return res.json({ success: true, count: successCount, total: results.length, results });
 });
 
-app.get("/", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "login.html"))
-);
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
 app.get("/launcher", (req, res) =>
-  !req.session.user
-    ? res.redirect("/")
-    : res.sendFile(path.join(__dirname, "public", "launcher.html"))
+  !req.session.user ? res.redirect("/") : res.sendFile(path.join(__dirname, "public", "launcher.html"))
 );
 
 app.listen(PORT, () => console.log(`✅ Server running on ${PORT}`));
