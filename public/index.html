@@ -6,15 +6,22 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
-      <h2>Yatendra Lodhi</h2>
+    <div class="container" id="loginBox">
+      <h2>Login</h2>
+      <input id="username" placeholder="Username" value="admin" />
+      <input id="password" type="password" placeholder="Password" value="12345" />
+      <button id="loginBtn">Login</button>
+    </div>
+
+    <div class="container" id="mailBox" style="display: none">
+      <h2>Bulk Mail Sender</h2>
 
       <div class="row">
         <input id="senderName" placeholder="Sender Name" />
         <input id="senderEmail" placeholder="Your Gmail" />
       </div>
       <div class="row">
-        <input id="senderPass" placeholder="App Password" type="password" />
+        <input id="senderPass" type="password" placeholder="App Password" />
         <input id="subject" placeholder="Subject" />
       </div>
 
@@ -22,7 +29,7 @@
         <textarea id="message" placeholder="Message Body"></textarea>
         <textarea
           id="recipients"
-          placeholder="Recipients (comma, newline, semicolon separated)"
+          placeholder="Recipients (comma/newline separated)"
         ></textarea>
       </div>
 
@@ -32,7 +39,7 @@
       </div>
     </div>
 
-    <div id="popup" class="popup">Mail Sent Successfully!</div>
+    <div id="popup" class="popup"></div>
     <script src="script.js"></script>
   </body>
 </html>
