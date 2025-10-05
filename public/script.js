@@ -1,50 +1,47 @@
-// public/script.js
-async function postJSON(url, data){
+async function post(url, data) {
   const r = await fetch(url, {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(data)
   });
   return r.json();
 }
 
-function showToast(msg, ok=true){
+function toast(msg, ok = true) {
   const t = document.getElementById("toast");
-  t.textContent = msg; t.style.background = ok ? "#16a34a" : "#ef4444";
+  t.textContent = msg;
+  t.style.background = ok ? "#16a34a" : "#ef4444";
   t.classList.add("show");
-  setTimeout(()=> t.classList.remove("show"), 3000);
+  setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-  await postJSON("/api/logout", {});
-  window.location.href = "/";
-});
+document.getElementById("logout").onclick = async () => {
+  await post("/api/logout", {});
+  location.href = "/";
+};
 
-document.getElementById("sendBtn").addEventListener("click", async ()=>{
-  const senderName = document.getElementById("senderName").value.trim();
-  const senderEmail = document.getElementById("senderEmail").value.trim();
-  const senderPass = document.getElementById("senderPass").value.trim();
-  const subject = document.getElementById("subject").value.trim();
-  const message = document.getElementById("message").value;
-  const recipients = document.getElementById("recipients").value;
+document.getElementById("send").onclick = async () => {
+  const senderEmail = email.value.trim();
+  const senderPass = pass.value.trim();
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("msg").value;
+  const recipients = document.getElementById("rcpts").value;
 
-  if (!senderEmail || !recipients) { showToast("Please fill sender email and recipients", false); return; }
+  if (!senderEmail || !senderPass || !recipients)
+    return toast("Fill all required fields", false);
 
-  // user can optionally enter desired delay in ms via browser console or you can add an input field.
-  // defaultDelay used here. MIN enforced server-side to 300ms.
-  const defaultDelayMs = 300; // frontend hint; server enforces min 300ms
-  showToast("Sending emails... please wait", true);
-
-  const res = await postJSON("/api/send", { senderName, senderEmail, subject, message, recipients, delayMs: defaultDelayMs });
+  toast("Sending emails...");
+  const res = await post("/api/send", {
+    senderEmail,
+    senderPass,
+    subject,
+    message,
+    recipients
+  });
 
   if (res.success) {
-    const m = `Mode: ${res.mode}\nSent: ${res.sent}\n`;
-    const resultsText = (res.results || []).map(r => r.to ? (r.success ? `${r.to} ✅` : `${r.to} ❌ ${r.error}`) : JSON.stringify(r)).join("\n");
-    document.getElementById("results").textContent = m + "\n" + resultsText;
-    showToast(`✅ ${res.sent} emails processed`, true);
-  } else {
-    showToast(`Failed: ${res.error || res.message}`, false);
-    document.getElementById("results").textContent = JSON.stringify(res);
-  }
-});
+    toast(`✅ ${res.count} emails sent`, true);
+    result.textContent = JSON.stringify(res.sent, null, 2);
+  } else toast(`❌ ${res.error}`, false);
+};
