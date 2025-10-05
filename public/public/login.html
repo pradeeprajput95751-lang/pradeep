@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Bulk Mail Sender</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
+      font-family: 'Inter', sans-serif;
+    }
+    .login-box {
+      background: white;
+      padding: 2rem 2.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      color: #1e3a8a;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    input {
+      padding: 0.8rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    .btn-login {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .btn-login:hover {
+      background: #1d4ed8;
+    }
+    .footer {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+    }
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #22c55e;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      font-weight: 500;
+    }
+    #toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h2>🔐 Admin Login</h2>
+    <p class="footer">Sign in to access Bulk Mail Dashboard</p>
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" id="password" placeholder="Password" autocomplete="off">
+    <button id="loginBtn" class="btn-login">Login</button>
+    <div id="toast"></div>
+  </div>
+
+  <script>
+    // ✅ Toast Notification
+    function showToast(text, ok = true) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.style.background = ok ? "#22c55e" : "#ef4444";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    // ✅ POST JSON Helper
+    async function postJSON(url, data) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    }
+
+    // ✅ Login function
+    async function handleLogin() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        showToast("Please fill in all fields ❌", false);
+        return;
+      }
+
+      const res = await postJSON("/api/login", { username, password });
+
+      if (res.success) {
+        showToast("Login Successful ✅", true);
+        setTimeout(() => {
+          window.location.href = "/launcher.html"; // redirect to launcher
+        }, 1000);
+      } else {
+        showToast("Invalid username or password ❌", false);
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", handleLogin);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleLogin();
+    });
+  </script>
+
+</body>
+</html>
