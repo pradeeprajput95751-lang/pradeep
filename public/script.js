@@ -1,67 +1,58 @@
-async function postJSON(url, data) {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(data),
-  });
-  return res.json();
-}
+const loginBtn = document.getElementById("loginBtn");
+const sendBtn = document.getElementById("sendBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-async function getJSON(url) {
-  const res = await fetch(url, { credentials: "include" });
-  return res.json();
-}
+if (loginBtn) {
+  loginBtn.onclick = async () => {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-function showToast(msg, ok = true) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.style.background = ok ? "#22c55e" : "#ef4444";
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 3000);
-}
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+      credentials: "include"
+    });
 
-// 🔐 LOGIN
-async function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if (!username || !password) return showToast("Enter credentials ❌", false);
-
-  const res = await postJSON("/api/login", { username, password });
-  if (res.success) {
-    showToast("Login successful ✅", true);
-    setTimeout(() => (window.location.href = "/launcher.html"), 1000);
-  } else {
-    showToast("Invalid username/password ❌", false);
-  }
-}
-
-// 📤 SEND EMAILS
-async function sendMail() {
-  const data = {
-    senderName: document.getElementById("senderName").value,
-    senderEmail: document.getElementById("senderEmail").value,
-    senderPass: document.getElementById("senderPass").value,
-    subject: document.getElementById("subject").value,
-    message: document.getElementById("message").value,
-    recipients: document.getElementById("recipients").value,
+    if (res.ok) location.href = "/launcher";
+    else document.getElementById("msg").innerText = "❌ Invalid login!";
   };
-
-  const res = await postJSON("/api/send", data);
-
-  if (res.success) {
-    showToast("Emails sent successfully ✅", true);
-    document.getElementById("results").textContent = res.results
-      .map(r => (r.success ? `${r.to} ✅` : `${r.to} ❌ ${r.error}`))
-      .join("\n");
-  } else {
-    showToast(res.error || "Send failed ❌", false);
-  }
 }
 
-// 🚪 LOGOUT
-async function logout() {
-  await postJSON("/api/logout", {});
-  showToast("Logged out ✅", true);
-  setTimeout(() => (window.location.href = "/login.html"), 1000);
+if (sendBtn) {
+  sendBtn.onclick = async () => {
+    const senderName = document.getElementById("senderName").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const subject = document.getElementById("subject").value;
+    const message = document.getElementById("message").value;
+    const recipients = document.getElementById("recipients").value;
+
+    const res = await fetch("/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ senderName, email, password, subject, message, recipients })
+    });
+
+    const data = await res.json();
+    const popup = document.getElementById("popup");
+    if (data.success) {
+      popup.innerText = `✅ Sent to ${data.sent} recipients!`;
+      popup.style.display = "block";
+      setTimeout(() => (popup.style.display = "none"), 3000);
+    } else {
+      popup.innerText = `❌ ${data.message}`;
+      popup.style.background = "#e74c3c";
+      popup.style.display = "block";
+      setTimeout(() => (popup.style.display = "none"), 3000);
+    }
+  };
+}
+
+if (logoutBtn) {
+  logoutBtn.onclick = async () => {
+    await fetch("/api/logout", { method: "POST", credentials: "include" });
+    location.href = "/";
+  };
 }
