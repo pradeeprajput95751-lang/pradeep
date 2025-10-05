@@ -48,7 +48,7 @@ app.post("/api/send", async (req, res) => {
   if (!req.session.user)
     return res.status(403).json({ success: false, error: "Not logged in" });
 
-  const { senderEmail, senderPass, subject, message, recipients } = req.body;
+  const { senderEmail, senderPass, senderName, subject, message, recipients } = req.body;
   if (!senderEmail || !senderPass || !recipients)
     return res
       .status(400)
@@ -64,13 +64,13 @@ app.post("/api/send", async (req, res) => {
     auth: { user: senderEmail, pass: senderPass }
   });
 
-  const delay = 300; // 0.3 sec between mails
+  const delay = 200; // fixed 0.2 sec between mails
   const sent = [];
 
   for (const to of list.slice(0, 30)) {
     try {
       await transporter.sendMail({
-        from: senderEmail,
+        from: `"${senderName || senderEmail}" <${senderEmail}>`,
         to,
         subject,
         text: message
