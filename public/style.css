@@ -1,53 +1,77 @@
 body {
-  background: #f3f4f6;
+  margin: 0;
+  background: #eef2f3;
+  font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  font-family: Arial, sans-serif;
 }
 
-.login-container, .mail-container {
+.login-container {
   background: white;
-  padding: 30px;
+  padding: 40px;
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  width: 400px;
-  max-width: 95%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 350px;
   text-align: center;
 }
 
-input, textarea, button {
+.login-container input, .login-container button {
   width: 100%;
-  padding: 10px;
   margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.mail-wrapper {
+  display: flex;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+  width: 80%;
+  height: 85%;
+  gap: 20px;
+}
+
+.mail-left, .mail-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+input, textarea, button {
+  padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
+  margin-top: 10px;
   font-size: 15px;
+}
+
+textarea {
+  flex: 1;
+  resize: none;
 }
 
 button {
   background: #007bff;
   color: white;
-  border: none;
   cursor: pointer;
 }
 
-button:hover { background: #0056b3; }
+button:hover {
+  background: #0056b3;
+}
 
-#popup {
+.popup {
   display: none;
-  margin-top: 15px;
   background: #4caf50;
   color: white;
   padding: 10px;
+  margin-top: 15px;
   border-radius: 5px;
-}
-
-textarea { height: 100px; resize: none; }
-
-.btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  text-align: center;
 }
