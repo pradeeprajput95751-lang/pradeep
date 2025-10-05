@@ -73,6 +73,7 @@ button:hover {
   opacity: 0;
   transition: opacity 0.4s;
 }
+
 .popup.show {
   opacity: 1;
 }
