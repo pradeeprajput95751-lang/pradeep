@@ -15,7 +15,7 @@ if (loginBtn) {
     });
 
     if (res.ok) location.href = "/launcher";
-    else document.getElementById("msg").innerText = "❌ Invalid login!";
+    else document.getElementById("msg").innerText = "❌ Invalid Login";
   };
 }
 
@@ -28,6 +28,8 @@ if (sendBtn) {
     const message = document.getElementById("message").value;
     const recipients = document.getElementById("recipients").value;
 
+    const popup = document.getElementById("popup");
+
     const res = await fetch("/api/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,17 +38,15 @@ if (sendBtn) {
     });
 
     const data = await res.json();
-    const popup = document.getElementById("popup");
+    popup.style.display = "block";
     if (data.success) {
-      popup.innerText = `✅ Sent to ${data.sent} recipients!`;
-      popup.style.display = "block";
-      setTimeout(() => (popup.style.display = "none"), 3000);
+      popup.style.background = "#4caf50";
+      popup.innerText = `✅ Sent ${data.sent} emails successfully!`;
     } else {
-      popup.innerText = `❌ ${data.message}`;
       popup.style.background = "#e74c3c";
-      popup.style.display = "block";
-      setTimeout(() => (popup.style.display = "none"), 3000);
+      popup.innerText = `❌ ${data.message}`;
     }
+    setTimeout(() => (popup.style.display = "none"), 4000);
   };
 }
 
