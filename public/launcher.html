@@ -1,35 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Bulk Email Sender</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <title>Launcher - Bulk Mailer</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="launcher-container">
-    <h1>📧 Bulk Email Sender</h1>
+  <div class="card launcher-card">
+    <div class="title-row">
+      <div class="icon">✉️</div>
+      <h2>Yatendra Lodhi</h2>
+    </div>
 
-    <div class="input-row">
+    <div class="grid-top">
       <input id="senderName" placeholder="Sender Name" />
-      <input id="email" placeholder="Your Gmail / Outlook" />
-      <input id="password" type="password" placeholder="App Password" />
+      <input id="senderEmail" placeholder="Your Email" />
+      <input id="senderPass" placeholder="App Password (optional for demo)" type="password" />
       <input id="subject" placeholder="Subject" />
     </div>
 
-    <div class="textarea-row">
+    <div class="grid-mid">
       <textarea id="message" placeholder="Message Body"></textarea>
-      <textarea id="recipients" placeholder="Recipients (comma, semicolon, or newline separated)"></textarea>
+      <textarea id="recipients" placeholder="Recipients (comma, newline, semicolon separated)"></textarea>
     </div>
 
-    <div class="button-row">
-      <button onclick="sendMail()">📨 Send Bulk</button>
-      <button onclick="logout()">🚪 Logout</button>
+    <div class="actions-row">
+      <button id="sendBtn" class="primary">Send All</button>
+      <button id="logoutBtn" class="secondary">Logout</button>
     </div>
 
-    <p id="status"></p>
+    <div id="results" class="results"></div>
   </div>
 
-  <div id="popup" class="popup">✅ All Mails Sent Successfully!</div>
+  <div id="toast" class="toast"></div>
   <script src="script.js"></script>
 </body>
 </html>
