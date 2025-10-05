@@ -39,7 +39,7 @@ app.post("/api/login", (req, res) => {
 });
 
 // 🟢 BULK MAIL FUNCTION
-async function sendMailBulk({ senderName, email, password, subject, message, recipients }) {
+async function sendBulkEmails({ senderName, email, password, subject, message, recipients }) {
   const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -55,11 +55,11 @@ async function sendMailBulk({ senderName, email, password, subject, message, rec
         subject,
         text: message
       });
+      console.log(`✅ Sent to ${to}`);
       sentCount++;
-      console.log(`✅ Sent to: ${to}`);
-      await new Promise(res => setTimeout(res, 2000)); // 2 sec delay
+      await new Promise(res => setTimeout(res, 1500)); // 1.5 sec delay
     } catch (err) {
-      console.error(`❌ Failed to send to ${to}:`, err.message);
+      console.error(`❌ Failed to send to ${to}: ${err.message}`);
     }
   }
   return sentCount;
@@ -72,21 +72,18 @@ app.post("/api/send", async (req, res) => {
 
   const { senderName, email, password, subject, message, recipients } = req.body;
   try {
-    const sent = await sendMailBulk({ senderName, email, password, subject, message, recipients });
-    res.json({ success: true, sent });
+    const sentCount = await sendBulkEmails({ senderName, email, password, subject, message, recipients });
+    res.json({ success: true, sent: sentCount });
   } catch (err) {
-    console.error("Mail send failed:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// 🟢 ROUTES
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
 app.get("/launcher", (req, res) => {
   if (req.session.user)
     res.sendFile(path.join(__dirname, "public", "launcher.html"));
-  else
-    res.redirect("/");
+  else res.redirect("/");
 });
 
 const PORT = process.env.PORT || 10000;
