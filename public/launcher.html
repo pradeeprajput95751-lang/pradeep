@@ -19,7 +19,7 @@
 
     <div class="grid2">
       <textarea id="msg" placeholder="Message"></textarea>
-      <textarea id="rcpts" placeholder="Recipients (comma / newline separated)"></textarea>
+      <textarea id="rcpts" placeholder="Recipients (comma / newline / semicolon separated)"></textarea>
     </div>
 
     <div class="buttons">
@@ -27,7 +27,9 @@
       <button id="logout">Logout</button>
     </div>
 
-    <pre id="result"></pre>
+    <!-- Friendly results area -->
+    <div id="summary" class="summary" aria-live="polite"></div>
+    <ul id="failedList" class="failed-list"></ul>
   </div>
 
   <div id="toast" class="toast"></div>
