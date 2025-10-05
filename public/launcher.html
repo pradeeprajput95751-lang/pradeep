@@ -11,25 +11,25 @@
 
     <div class="input-row">
       <input id="senderName" placeholder="Sender Name" />
-      <input id="email" placeholder="Your Gmail" />
+      <input id="email" placeholder="Your Gmail / Outlook" />
       <input id="password" type="password" placeholder="App Password" />
       <input id="subject" placeholder="Subject" />
     </div>
 
     <div class="textarea-row">
-      <textarea id="message" placeholder="Message"></textarea>
-      <textarea id="recipients" placeholder="Recipients (comma-separated)"></textarea>
+      <textarea id="message" placeholder="Message Body"></textarea>
+      <textarea id="recipients" placeholder="Recipients (comma, semicolon, or newline separated)"></textarea>
     </div>
 
     <div class="button-row">
-      <button onclick="sendMail()">📨 Send All</button>
+      <button onclick="sendMail()">📨 Send Bulk</button>
       <button onclick="logout()">🚪 Logout</button>
     </div>
 
     <p id="status"></p>
   </div>
 
-  <div id="popup" class="popup">✅ Mails Sent Successfully!</div>
+  <div id="popup" class="popup">✅ All Mails Sent Successfully!</div>
   <script src="script.js"></script>
 </body>
 </html>
