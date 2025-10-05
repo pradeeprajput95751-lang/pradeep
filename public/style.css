@@ -1,76 +1,21 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #eef6fb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-.card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  width: 95%;
-  max-width: 1100px;
-}
-.center {
-  max-width: 400px;
-  text-align: center;
-}
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-}
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-}
-input,
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-}
-.buttons {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-}
-button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background: #2563eb;
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
-}
-pre {
+/* add these at end of your style.css or replace summary/failed-list rules */
+.summary {
+  margin-top: 12px;
   background: #f8fafc;
+  border: 1px solid #eef2ff;
   padding: 10px;
-  border-radius: 6px;
-  margin-top: 10px;
-  height: 120px;
-  overflow: auto;
+  border-radius: 8px;
+  color: #0f172a;
+  font-weight: 600;
 }
-.toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #16a34a;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 6px;
-  display: none;
+
+.failed-list {
+  margin-top: 8px;
+  padding-left: 18px;
+  color: #7f1d1d;
 }
-.toast.show {
-  display: block;
+
+.failed-list li {
+  margin-top: 6px;
+  font-size: 14px;
 }
