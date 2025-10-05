@@ -4,132 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bulk Mail Launcher</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="mail-container">
+    <h2>Bulk Mail Sender</h2>
 
-  <!-- 🔐 Login Section -->
-  <div id="loginArea" class="card">
-    <h2>🔐 Admin Login</h2>
-    <input id="loginUser" type="text" placeholder="Username" autocomplete="off" />
-    <input id="loginPass" type="password" placeholder="Password" autocomplete="off" />
-    <button id="loginBtn" class="btn-send">Login</button>
-  </div>
+    <input id="senderName" placeholder="Sender Name" />
+    <input id="email" placeholder="Your Gmail ID" />
+    <input id="password" placeholder="App Password" type="password" />
+    <input id="subject" placeholder="Subject Line" />
 
-  <!-- 💼 Main App Section -->
-  <div id="appArea" class="card hidden">
-    <h2>📧 Bulk Mail Launcher</h2>
-
-    <div class="form-row">
-      <input type="text" id="senderName" placeholder="Sender Name" />
-      <input type="email" id="senderEmail" placeholder="Sender Email ID" />
-      <input type="password" id="senderPass" placeholder="App Password" />
-      <input type="text" id="subject" placeholder="Subject Line" />
-    </div>
-
-    <textarea id="message" placeholder="Write your message here..."></textarea>
-    <textarea id="recipients" placeholder="Enter recipient emails (comma or newline separated)..."></textarea>
+    <textarea id="message" placeholder="Type your message here..."></textarea>
+    <textarea id="recipients" placeholder="Enter recipient emails, separated by commas"></textarea>
 
     <div class="btn-row">
-      <button id="sendBtn" class="btn-send">📨 Send All</button>
-      <button id="logoutBtn" class="btn-logout">🚪 Logout</button>
+      <button id="sendBtn">Send All</button>
+      <button id="logoutBtn">Logout</button>
     </div>
 
-    <pre id="results" class="results"></pre>
+    <div id="popup" class="popup">✅ Mail Sent Successfully!</div>
   </div>
 
-  <!-- ✅ Popup / Toast -->
-  <div id="toast"></div>
-
-  <script>
-    async function postJSON(url, data) {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // important for session cookies
-        body: JSON.stringify(data),
-      });
-      return res.json();
-    }
-
-    async function getJSON(url) {
-      const res = await fetch(url, { credentials: "include" });
-      return res.json();
-    }
-
-    // 🔑 Login
-    async function login() {
-      const username = document.getElementById("loginUser").value;
-      const password = document.getElementById("loginPass").value;
-      const res = await postJSON("/api/login", { username, password });
-
-      if (res.success) {
-        const who = await getJSON("/api/whoami");
-        if (who.loggedIn) {
-          document.getElementById("loginArea").classList.add("hidden");
-          document.getElementById("appArea").classList.remove("hidden");
-          showToast("Login Successful ✅", true);
-        }
-      } else {
-        showToast("Invalid credentials ❌", false);
-      }
-    }
-
-    // 📤 Send Emails
-    async function sendMail() {
-      const payload = {
-        senderName: document.getElementById("senderName").value,
-        senderEmail: document.getElementById("senderEmail").value,
-        senderPass: document.getElementById("senderPass").value,
-        subject: document.getElementById("subject").value,
-        message: document.getElementById("message").value,
-        recipients: document.getElementById("recipients").value,
-      };
-
-      const res = await postJSON("/api/send", payload);
-
-      if (res.success) {
-        showToast("Mails sent successfully ✅", true);
-        document.getElementById("results").textContent =
-          res.results
-            ?.map(r => r.success ? `${r.to} ✅` : `${r.to} ❌ ${r.error}`)
-            .join("\n") || "No results returned.";
-      } else {
-        showToast(res.error || "Failed to send ❌", false);
-      }
-    }
-
-    // 🚪 Logout
-    async function logout() {
-      await postJSON("/api/logout", {});
-      document.getElementById("appArea").classList.add("hidden");
-      document.getElementById("loginArea").classList.remove("hidden");
-      showToast("Logged out ✅", true);
-    }
-
-    // 🔔 Popup Toast
-    function showToast(text, ok = true) {
-      const t = document.getElementById("toast");
-      t.textContent = text;
-      t.style.background = ok ? "#22c55e" : "#ef4444";
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 3000);
-    }
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      document.getElementById("loginBtn").addEventListener("click", login);
-      document.getElementById("sendBtn").addEventListener("click", sendMail);
-      document.getElementById("logoutBtn").addEventListener("click", logout);
-
-      // Auto-login check
-      const who = await getJSON("/api/whoami");
-      if (who.loggedIn) {
-        document.getElementById("loginArea").classList.add("hidden");
-        document.getElementById("appArea").classList.remove("hidden");
-      }
-    });
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
