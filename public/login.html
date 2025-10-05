@@ -1,36 +1,36 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Login - Bulk Mailer</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="card center-card">
-    <h1>🔒 Login</h1>
-    <input id="username" placeholder="Username" value="admin" />
-    <input id="password" placeholder="Password" type="password" value="12345" />
-    <button id="loginBtn">Login</button>
-    <p id="loginMsg"></p>
+  <div class="card center">
+    <h2>🔐 Login</h2>
+    <input id="user" placeholder="Username" value="admin" />
+    <input id="pass" placeholder="Password" type="password" value="12345" />
+    <button id="btn">Login</button>
+    <p id="msg"></p>
   </div>
 
   <script>
-    async function postJSON(url, data){
-      const r = await fetch(url,{
-        method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
+    async function post(url, data) {
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(data)
       });
       return r.json();
     }
-
-    document.getElementById("loginBtn").addEventListener("click", async ()=>{
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value.trim();
-      const res = await postJSON("/api/login", { username: u, password: p });
-      if (res.success) window.location.href = "/launcher";
-      else document.getElementById("loginMsg").innerText = res.error || "Login failed";
-    });
+    document.getElementById("btn").onclick = async () => {
+      const u = user.value, p = pass.value;
+      const res = await post("/api/login", { username: u, password: p });
+      if (res.success) location.href = "/launcher";
+      else msg.textContent = res.error || "Login failed";
+    };
   </script>
 </body>
 </html>
