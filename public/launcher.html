@@ -1,36 +1,33 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Launcher - Bulk Mailer</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>Bulk Mail Launcher</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="card launcher-card">
-    <div class="title-row">
-      <div class="icon">✉️</div>
-      <h2>Yatendra Lodhi</h2>
-    </div>
+  <div class="card landscape">
+    <h2>📧 Bulk Mail Sender</h2>
 
-    <div class="grid-top">
-      <input id="senderName" placeholder="Sender Name" />
-      <input id="senderEmail" placeholder="Your Email" />
-      <input id="senderPass" placeholder="App Password (optional for demo)" type="password" />
+    <div class="grid">
+      <input id="email" placeholder="Your Gmail" />
+      <input id="pass" placeholder="App Password" type="password" />
       <input id="subject" placeholder="Subject" />
+      <input id="delay" placeholder="Delay (ms)" value="300" />
     </div>
 
-    <div class="grid-mid">
-      <textarea id="message" placeholder="Message Body"></textarea>
-      <textarea id="recipients" placeholder="Recipients (comma, newline, semicolon separated)"></textarea>
+    <div class="grid2">
+      <textarea id="msg" placeholder="Message"></textarea>
+      <textarea id="rcpts" placeholder="Recipients (comma / newline separated)"></textarea>
     </div>
 
-    <div class="actions-row">
-      <button id="sendBtn" class="primary">Send All</button>
-      <button id="logoutBtn" class="secondary">Logout</button>
+    <div class="buttons">
+      <button id="send">Send</button>
+      <button id="logout">Logout</button>
     </div>
 
-    <div id="results" class="results"></div>
+    <pre id="result"></pre>
   </div>
 
   <div id="toast" class="toast"></div>
