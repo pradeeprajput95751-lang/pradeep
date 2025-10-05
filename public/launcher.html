@@ -2,28 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bulk Mail Launcher</title>
+  <title>Bulk Email Launcher</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="mail-wrapper">
-    <div class="mail-left">
-      <h2>Sender Info</h2>
-      <input id="senderName" placeholder="Sender Name">
-      <input id="email" placeholder="Your Gmail">
-      <input id="password" type="password" placeholder="App Password">
-      <input id="subject" placeholder="Subject">
-      <textarea id="message" placeholder="Message Body..."></textarea>
-    </div>
-
-    <div class="mail-right">
-      <h2>Recipients</h2>
-      <textarea id="recipients" placeholder="Enter emails separated by commas"></textarea>
-      <button id="sendBtn">Send All</button>
-      <button id="logoutBtn">Logout</button>
-      <div id="popup" class="popup"></div>
-    </div>
+  <div class="landscape">
+    <h1>📧 Bulk Email Sender</h1>
+    <input id="senderName" placeholder="Sender Name" />
+    <input id="email" placeholder="Your Gmail" />
+    <input id="password" type="password" placeholder="App Password" />
+    <input id="subject" placeholder="Subject" />
+    <textarea id="message" placeholder="Message"></textarea>
+    <textarea id="recipients" placeholder="Comma-separated email list"></textarea>
+    <button onclick="sendMail()">Send Emails</button>
+    <p id="status"></p>
   </div>
+  <div id="popup" class="popup">✅ Mail Sent Successfully!</div>
   <script src="script.js"></script>
 </body>
 </html>
