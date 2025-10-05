@@ -8,7 +8,7 @@ async function sendMail() {
   const status = document.getElementById("status");
 
   if (!senderName || !email || !password || !subject || !message || !recipients) {
-    status.innerText = "⚠️ Please fill all fields!";
+    status.innerText = "⚠️ Please fill all fields.";
     return;
   }
 
@@ -16,19 +16,19 @@ async function sendMail() {
   const res = await fetch("/api/send", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ senderName, email, password, subject, message, recipients })
+    body: JSON.stringify({ senderName, email, password, subject, message, recipients }),
   });
 
   const data = await res.json();
   if (data.success) {
-    status.innerText = `✅ ${data.sent} emails sent successfully!`;
+    status.innerText = `✅ ${data.sent} mails sent successfully!`;
     showPopup();
   } else {
     status.innerText = `❌ Failed: ${data.message}`;
   }
 }
 
-async function logout() {
+function logout() {
   window.location.href = "/";
 }
 
