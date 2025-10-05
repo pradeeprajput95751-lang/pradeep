@@ -38,43 +38,46 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// 🟢 SEND MAIL (Gmail App Password)
+// 🟢 BULK MAIL FUNCTION
+async function sendMailBulk({ senderName, email, password, subject, message, recipients }) {
+  const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: email, pass: password }
+  });
+
+  let sentCount = 0;
+  for (const to of emailList) {
+    try {
+      await transporter.sendMail({
+        from: `"${senderName}" <${email}>`,
+        to,
+        subject,
+        text: message
+      });
+      sentCount++;
+      console.log(`✅ Sent to: ${to}`);
+      await new Promise(res => setTimeout(res, 2000)); // 2 sec delay
+    } catch (err) {
+      console.error(`❌ Failed to send to ${to}:`, err.message);
+    }
+  }
+  return sentCount;
+}
+
+// 🟢 SEND MAIL ROUTE
 app.post("/api/send", async (req, res) => {
   if (!req.session.user)
     return res.status(403).json({ success: false, message: "Not logged in" });
 
   const { senderName, email, password, subject, message, recipients } = req.body;
-  const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
-
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: { user: email, pass: password }
-    });
-
-    await Promise.all(
-      emailList.map(to =>
-        transporter.sendMail({
-          from: `"${senderName}" <${email}>`,
-          to,
-          subject,
-          text: message
-        })
-      )
-    );
-
-    res.json({ success: true, sent: emailList.length });
+    const sent = await sendMailBulk({ senderName, email, password, subject, message, recipients });
+    res.json({ success: true, sent });
   } catch (err) {
     console.error("Mail send failed:", err);
     res.status(500).json({ success: false, message: err.message });
   }
-});
-
-// 🟢 LOGOUT
-app.post("/api/logout", (req, res) => {
-  req.session.destroy(() => res.json({ success: true }));
 });
 
 // 🟢 ROUTES
