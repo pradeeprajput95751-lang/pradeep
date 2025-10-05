@@ -27,7 +27,7 @@ app.use(
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "12345";
 
-// 🔹 LOGIN
+// 🟢 LOGIN
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
@@ -38,43 +38,46 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// 🔹 SEND MAIL
+// 🟢 SEND MAIL (Gmail App Password)
 app.post("/api/send", async (req, res) => {
   if (!req.session.user)
     return res.status(403).json({ success: false, message: "Not logged in" });
 
   const { senderName, email, password, subject, message, recipients } = req.body;
+  const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
 
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
       auth: { user: email, pass: password }
     });
 
-    const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
-
-    for (const to of emailList) {
-      await transporter.sendMail({
-        from: `"${senderName}" <${email}>`,
-        to,
-        subject,
-        text: message
-      });
-    }
+    await Promise.all(
+      emailList.map(to =>
+        transporter.sendMail({
+          from: `"${senderName}" <${email}>`,
+          to,
+          subject,
+          text: message
+        })
+      )
+    );
 
     res.json({ success: true, sent: emailList.length });
   } catch (err) {
-    console.error("Send error:", err);
+    console.error("Mail send failed:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// 🔹 LOGOUT
+// 🟢 LOGOUT
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
-// 🔹 ROUTES
+// 🟢 ROUTES
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
 app.get("/launcher", (req, res) => {
   if (req.session.user)
