@@ -8,6 +8,21 @@ async function post(url, data) {
   return res.json();
 }
 
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await post("/api/login", { username, password });
+
+  if (res.success) {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("mailBox").style.display = "block";
+    showPopup("✅ Login successful!", "success");
+  } else {
+    showPopup("❌ Invalid credentials", "error");
+  }
+}
+
 async function sendMail() {
   const senderName = document.getElementById("senderName").value;
   const senderEmail = document.getElementById("senderEmail").value;
@@ -25,23 +40,26 @@ async function sendMail() {
     recipients,
   });
 
-  const popup = document.getElementById("popup");
   if (res.success) {
-    popup.textContent = "✅ Mails sent successfully!";
-    popup.classList.add("show");
+    showPopup("✅ Mails sent successfully!", "success");
   } else {
-    popup.textContent = "❌ Failed: " + res.error;
-    popup.style.background = "#dc3545";
-    popup.classList.add("show");
+    showPopup("❌ " + (res.error || "Failed"), "error");
   }
-
-  setTimeout(() => popup.classList.remove("show"), 3000);
 }
 
 async function logout() {
   await post("/api/logout", {});
-  window.location.reload();
+  location.reload();
 }
 
+function showPopup(msg, type) {
+  const popup = document.getElementById("popup");
+  popup.textContent = msg;
+  popup.style.background = type === "success" ? "#28a745" : "#dc3545";
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 3000);
+}
+
+document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("sendBtn").addEventListener("click", sendMail);
 document.getElementById("logoutBtn").addEventListener("click", logout);
