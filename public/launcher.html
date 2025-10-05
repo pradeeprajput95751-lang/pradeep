@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Bulk Email Launcher</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Bulk Email Sender</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="landscape">
+  <div class="launcher-container">
     <h1>📧 Bulk Email Sender</h1>
-    <input id="senderName" placeholder="Sender Name" />
-    <input id="email" placeholder="Your Gmail" />
-    <input id="password" type="password" placeholder="App Password" />
-    <input id="subject" placeholder="Subject" />
-    <textarea id="message" placeholder="Message"></textarea>
-    <textarea id="recipients" placeholder="Comma-separated email list"></textarea>
-    <button onclick="sendMail()">Send Emails</button>
+
+    <div class="input-row">
+      <input id="senderName" placeholder="Sender Name" />
+      <input id="email" placeholder="Your Gmail" />
+      <input id="password" type="password" placeholder="App Password" />
+      <input id="subject" placeholder="Subject" />
+    </div>
+
+    <div class="textarea-row">
+      <textarea id="message" placeholder="Message"></textarea>
+      <textarea id="recipients" placeholder="Recipients (comma-separated)"></textarea>
+    </div>
+
+    <div class="button-row">
+      <button onclick="sendMail()">📨 Send All</button>
+      <button onclick="logout()">🚪 Logout</button>
+    </div>
+
     <p id="status"></p>
   </div>
-  <div id="popup" class="popup">✅ Mail Sent Successfully!</div>
+
+  <div id="popup" class="popup">✅ Mails Sent Successfully!</div>
   <script src="script.js"></script>
 </body>
 </html>
