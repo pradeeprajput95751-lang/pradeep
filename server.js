@@ -27,7 +27,7 @@ app.use(
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "12345";
 
-// 🟢 LOGIN
+// 🔐 LOGIN
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
@@ -38,12 +38,16 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// 🟢 BULK MAIL FUNCTION
+// 🧠 SMART BULK MAIL FUNCTION
 async function sendBulkEmails({ senderName, email, password, subject, message, recipients }) {
-  const emailList = recipients.split(",").map(e => e.trim()).filter(Boolean);
+  const emailList = recipients.split(/[\n,;]/).map(e => e.trim()).filter(Boolean);
+  console.log(`🚀 Sending to ${emailList.length} recipients...`);
+
   const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: { user: email, pass: password }
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: { user: email, pass: password },
   });
 
   let sentCount = 0;
@@ -55,26 +59,27 @@ async function sendBulkEmails({ senderName, email, password, subject, message, r
         subject,
         text: message
       });
-      console.log(`✅ Sent to ${to}`);
       sentCount++;
-      await new Promise(res => setTimeout(res, 1500)); // 1.5 sec delay
+      console.log(`✅ Sent to: ${to}`);
+      await new Promise(res => setTimeout(res, 2000)); // Delay between mails
     } catch (err) {
-      console.error(`❌ Failed to send to ${to}: ${err.message}`);
+      console.error(`❌ Failed: ${to} -> ${err.message}`);
     }
   }
   return sentCount;
 }
 
-// 🟢 SEND MAIL ROUTE
+// 📤 SEND MAIL API
 app.post("/api/send", async (req, res) => {
   if (!req.session.user)
     return res.status(403).json({ success: false, message: "Not logged in" });
 
   const { senderName, email, password, subject, message, recipients } = req.body;
   try {
-    const sentCount = await sendBulkEmails({ senderName, email, password, subject, message, recipients });
-    res.json({ success: true, sent: sentCount });
+    const sent = await sendBulkEmails({ senderName, email, password, subject, message, recipients });
+    res.json({ success: true, sent });
   } catch (err) {
+    console.error("Send failed:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -87,4 +92,4 @@ app.get("/launcher", (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Running on port ${PORT}`));
