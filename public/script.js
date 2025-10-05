@@ -1,3 +1,4 @@
+// public/script.js
 async function post(url, data) {
   const r = await fetch(url, {
     method: "POST",
@@ -13,26 +14,33 @@ function toast(msg, ok = true) {
   t.textContent = msg;
   t.style.background = ok ? "#16a34a" : "#ef4444";
   t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2500);
+  setTimeout(() => t.classList.remove("show"), 2800);
 }
 
-document.getElementById("logout").onclick = async () => {
+document.getElementById("logout").addEventListener("click", async () => {
   await post("/api/logout", {});
-  location.href = "/";
-};
+  window.location.href = "/";
+});
 
-document.getElementById("send").onclick = async () => {
-  const senderName = senderNameEl.value.trim();
-  const senderEmail = email.value.trim();
-  const senderPass = pass.value.trim();
+document.getElementById("send").addEventListener("click", async () => {
+  const senderName = document.getElementById("senderName").value.trim();
+  const senderEmail = document.getElementById("email").value.trim();
+  const senderPass = document.getElementById("pass").value.trim();
   const subject = document.getElementById("subject").value;
   const message = document.getElementById("msg").value;
   const recipients = document.getElementById("rcpts").value;
 
-  if (!senderEmail || !senderPass || !recipients)
-    return toast("Fill all required fields", false);
+  // clear previous UI
+  document.getElementById("summary").textContent = "";
+  document.getElementById("failedList").innerHTML = "";
 
-  toast("Sending emails...");
+  if (!senderEmail || !senderPass || !recipients) {
+    toast("Fill all required fields", false);
+    return;
+  }
+
+  toast("Sending emails... (this may take a moment)", true);
+
   const res = await post("/api/send", {
     senderName,
     senderEmail,
@@ -42,11 +50,31 @@ document.getElementById("send").onclick = async () => {
     recipients
   });
 
-  if (res.success) {
-    toast(`✅ ${res.count} emails sent`, true);
-    result.textContent = JSON.stringify(res.sent, null, 2);
-  } else toast(`❌ ${res.error}`, false);
-};
+  if (!res || !res.success) {
+    toast(`Failed: ${res && (res.error || res.message) ? (res.error || res.message) : "Unknown error"}`, false);
+    return;
+  }
 
-// fix missing reference
-const senderNameEl = document.getElementById("senderName");
+  // Friendly summary
+  const total = res.total ?? (res.sent ? res.sent.length : 0);
+  const okCount = res.count ?? (res.sent ? res.sent.filter(s => s.ok).length : 0);
+  const failCount = total - okCount;
+
+  const summaryEl = document.getElementById("summary");
+  summaryEl.innerHTML = `<strong>Result:</strong> ${okCount} / ${total} emails sent successfully.`;
+
+  // If some failed, show a compact list (not raw JSON)
+  if (failCount > 0 && Array.isArray(res.results)) {
+    const failed = res.results.filter(r => !r.ok);
+    const failedListEl = document.getElementById("failedList");
+    failedListEl.innerHTML = `<li><strong>Failed (${failed.length}):</strong></li>`;
+    failed.forEach(f => {
+      const li = document.createElement("li");
+      li.textContent = `${f.to} — ${f.error || "Failed"}`;
+      failedListEl.appendChild(li);
+    });
+    toast(`Finished: ${okCount} sent, ${failed.length} failed`, false);
+  } else {
+    toast(`✅ ${okCount} emails sent successfully`, true);
+  }
+});
