@@ -1,65 +1,36 @@
 body {
-  margin: 0;
-  background: #eef2f3;
   font-family: Arial, sans-serif;
+  background: #121212;
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-.login-container {
-  background: white;
-  padding: 40px;
+.landscape {
+  width: 90%;
+  max-width: 1000px;
+  background: #1f1f1f;
+  padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 350px;
-  text-align: center;
-}
-
-.login-container input, .login-container button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-.mail-wrapper {
-  display: flex;
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 25px rgba(0,0,0,0.15);
-  width: 80%;
-  height: 85%;
-  gap: 20px;
-}
-
-.mail-left, .mail-right {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 input, textarea, button {
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ddd;
-  margin-top: 10px;
-  font-size: 15px;
-}
-
-textarea {
-  flex: 1;
-  resize: none;
+  border: none;
+  width: 100%;
 }
 
 button {
   background: #007bff;
   color: white;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 button:hover {
@@ -68,10 +39,12 @@ button:hover {
 
 .popup {
   display: none;
-  background: #4caf50;
-  color: white;
-  padding: 10px;
-  margin-top: 15px;
-  border-radius: 5px;
-  text-align: center;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #28a745;
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-size: 16px;
 }
