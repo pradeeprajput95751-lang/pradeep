@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Bulk Mail Launcher</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="mail-container">
-    <h2>Bulk Mail Sender</h2>
-
-    <input id="senderName" placeholder="Sender Name" />
-    <input id="email" placeholder="Your Gmail ID" />
-    <input id="password" placeholder="App Password" type="password" />
-    <input id="subject" placeholder="Subject Line" />
-
-    <textarea id="message" placeholder="Type your message here..."></textarea>
-    <textarea id="recipients" placeholder="Enter recipient emails, separated by commas"></textarea>
-
-    <div class="btn-row">
-      <button id="sendBtn">Send All</button>
-      <button id="logoutBtn">Logout</button>
+  <div class="mail-wrapper">
+    <div class="mail-left">
+      <h2>Sender Info</h2>
+      <input id="senderName" placeholder="Sender Name">
+      <input id="email" placeholder="Your Gmail">
+      <input id="password" type="password" placeholder="App Password">
+      <input id="subject" placeholder="Subject">
+      <textarea id="message" placeholder="Message Body..."></textarea>
     </div>
 
-    <div id="popup" class="popup">✅ Mail Sent Successfully!</div>
+    <div class="mail-right">
+      <h2>Recipients</h2>
+      <textarea id="recipients" placeholder="Enter emails separated by commas"></textarea>
+      <button id="sendBtn">Send All</button>
+      <button id="logoutBtn">Logout</button>
+      <div id="popup" class="popup"></div>
+    </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
