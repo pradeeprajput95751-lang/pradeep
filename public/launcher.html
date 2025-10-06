@@ -2,28 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Bulk Mailer</title>
+  <title>🚀 Bulk Mail Sender</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="login-page">
-  <div class="login-container">
-    <h1>🔐 Login</h1>
-    <input type="email" id="email" placeholder="Your Gmail ID" />
-    <input type="password" id="appPassword" placeholder="App Password" />
-    <button onclick="login()">Login</button>
+<body class="launcher-page">
+  <div class="main-box">
+    <h1>🚀 Bulk Mail Sender</h1>
+
+    <div class="form-grid">
+      <div class="left">
+        <label>Name</label>
+        <input id="senderName" type="text" placeholder="Your Name" />
+
+        <label>App Password</label>
+        <input id="appPasswordBox" type="password" placeholder="App Password" />
+
+        <label>Template</label>
+        <textarea id="message" rows="5" placeholder="Write your message here..."></textarea>
+      </div>
+
+      <div class="right">
+        <label>Sender Email</label>
+        <input id="yourEmailBox" type="email" placeholder="Your Gmail ID" />
+
+        <label>Subject</label>
+        <input id="subject" type="text" placeholder="Mail Subject" />
+
+        <label>Bulk Email</label>
+        <textarea id="emails" rows="5" placeholder="user1@gmail.com&#10;user2@gmail.com"></textarea>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="sendBtn" onclick="sendBulkEmails()">📨 Send All</button>
+      <button id="logoutBtn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <p id="statusText"></p>
   </div>
 
-  <script>
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const appPassword = document.getElementById("appPassword").value.trim();
-
-      if (!email || !appPassword) return alert("Enter Email and App Password");
-
-      localStorage.setItem("yourEmail", email);
-      localStorage.setItem("appPassword", appPassword);
-      window.location.href = "launcher.html";
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
