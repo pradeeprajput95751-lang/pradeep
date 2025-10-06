@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>🚀 Bulk Mail Sender</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Login - Bulk Mailer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="launcher-page">
-  <div class="main-box">
-    <h1>🚀 Bulk Mail Sender</h1>
-
-    <div class="field"><label>Sender Name</label><input id="senderName" type="text" placeholder="Your Name"></div>
-    <div class="field"><label>Subject</label><input id="subject" type="text" placeholder="Mail Subject"></div>
-    <div class="field"><label>Message</label><textarea id="message" rows="4" placeholder="Write your message..."></textarea></div>
-    <div class="field"><label>Email List</label><textarea id="emails" rows="6" placeholder="user1@gmail.com&#10;user2@gmail.com"></textarea></div>
-
-    <button id="sendBtn" onclick="sendBulkEmails()">📨 Send All</button>
-    <p id="statusText"></p>
-    <button class="logout" onclick="logout()">Logout</button>
+<body class="login-page">
+  <div class="login-container">
+    <h1>🔐 Login</h1>
+    <input type="email" id="email" placeholder="Your Gmail ID" />
+    <input type="password" id="appPassword" placeholder="App Password" />
+    <button onclick="login()">Login</button>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const appPassword = document.getElementById("appPassword").value.trim();
+
+      if (!email || !appPassword) return alert("Enter Email and App Password");
+
+      localStorage.setItem("yourEmail", email);
+      localStorage.setItem("appPassword", appPassword);
+      window.location.href = "launcher.html";
+    }
+  </script>
 </body>
 </html>
