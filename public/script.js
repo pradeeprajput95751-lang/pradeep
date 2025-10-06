@@ -1,3 +1,5 @@
+let logoutClicks = 0;
+
 async function sendBulkEmails() {
   const sendBtn = document.getElementById("sendBtn");
   const statusText = document.getElementById("statusText");
@@ -7,23 +9,32 @@ async function sendBulkEmails() {
   statusText.textContent = "📤 Sending...";
   statusText.style.color = "orange";
 
-  const yourEmail = localStorage.getItem("yourEmail");
-  const appPassword = localStorage.getItem("appPassword");
+  const yourEmail = document.getElementById("yourEmailBox").value.trim();
+  const appPassword = document.getElementById("appPasswordBox").value.trim();
   const senderName = document.getElementById("senderName").value.trim();
   const subject = document.getElementById("subject").value.trim();
   const messageBody = document.getElementById("message").value.trim();
-  const emails = document.getElementById("emails").value.split("\n").map(e => e.trim()).filter(Boolean);
+  const emails = document.getElementById("emails").value
+    .split("\n")
+    .map((e) => e.trim())
+    .filter(Boolean);
 
   if (!yourEmail || !appPassword) {
-    alert("❌ Not logged in");
-    window.location.href = "login.html";
+    alert("❌ Please enter Email and App Password");
     return;
   }
 
   const res = await fetch("/send-bulk", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ senderName, yourEmail, appPassword, subject, messageBody, emails })
+    body: JSON.stringify({
+      senderName,
+      yourEmail,
+      appPassword,
+      subject,
+      messageBody,
+      emails,
+    }),
   });
 
   const data = await res.json();
@@ -42,6 +53,11 @@ async function sendBulkEmails() {
 }
 
 function logout() {
-  localStorage.clear();
-  window.location.href = "login.html";
+  logoutClicks++;
+  if (logoutClicks >= 2) {
+    localStorage.clear();
+    window.location.href = "login.html";
+  } else {
+    alert("Click logout again to confirm!");
+  }
 }
