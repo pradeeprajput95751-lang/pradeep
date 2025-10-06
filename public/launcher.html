@@ -1,28 +1,76 @@
 async function sendBulkEmails() {
-  const yourEmail = localStorage.getItem("yourEmail");
-  const appPassword = localStorage.getItem("appPassword");
+  const sendBtn = document.getElementById("sendBtn");
+  const statusText = document.getElementById("statusText");
 
-  const senderName = document.getElementById("senderName").value;
-  const subject = document.getElementById("subject").value;
-  const messageBody = document.getElementById("message").value;
-  const emails = document.getElementById("emails").value
-    .split("\n")
-    .map((e) => e.trim())
-    .filter((e) => e);
+  // UI feedback start
+  sendBtn.disabled = true;
+  sendBtn.style.background = "red";
+  statusText.innerText = "📨 Sending...";
+  statusText.style.color = "red";
 
-  if (!yourEmail || !appPassword) {
-    alert("❌ Not logged in");
-    window.location.href = "login.html";
-    return;
+  try {
+    const yourEmail = localStorage.getItem("yourEmail");
+    const appPassword = localStorage.getItem("appPassword");
+
+    const senderName = document.getElementById("senderName").value;
+    const subject = document.getElementById("subject").value;
+    const messageBody = document.getElementById("message").value;
+    const emails = document
+      .getElementById("emails")
+      .value.split("\n")
+      .map((e) => e.trim())
+      .filter((e) => e);
+
+    if (!yourEmail || !appPassword) {
+      alert("❌ Not logged in — please sign in again!");
+      window.location.href = "login.html";
+      return;
+    }
+
+    if (emails.length === 0) {
+      alert("⚠️ No email addresses entered!");
+      return;
+    }
+
+    // Start sending
+    const res = await fetch("/send-bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        senderName,
+        yourEmail,
+        appPassword,
+        subject,
+        messageBody,
+        emails,
+      }),
+    });
+
+    // Parse server response safely
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      console.error("Invalid JSON from server:", err);
+      alert("❌ Server returned invalid response.");
+      return;
+    }
+
+    if (res.ok && data.ok) {
+      statusText.innerText = "✅ Sent successfully!";
+      statusText.style.color = "green";
+      alert(`✅ ${data.count} emails sent successfully!`);
+    } else {
+      throw new Error(data.error || "Unknown server error");
+    }
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    alert(`❌ Failed to send: ${error.message}`);
+    statusText.innerText = "❌ Failed!";
+    statusText.style.color = "red";
+  } finally {
+    // Reset button state
+    sendBtn.disabled = false;
+    sendBtn.style.background = "#007bff";
   }
-
-  const res = await fetch("/send-bulk", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ senderName, yourEmail, appPassword, subject, messageBody, emails }),
-  });
-
-  const data = await res.json();
-  if (data.ok) alert(`✅ ${data.count} emails sent successfully!`);
-  else alert(`❌ Failed: ${data.error}`);
 }
