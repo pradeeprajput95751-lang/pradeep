@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Login - Bulk Mailer</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="login-page">
-  <div class="login-box">
-    <h2>Login to Bulk Mailer</h2>
-    <input type="email" id="email" placeholder="Your Gmail" />
-    <input type="password" id="appPassword" placeholder="App Password" />
+  <div class="login-container">
+    <h1>🔐 Login to Mailer</h1>
+    <input type="email" id="email" placeholder="Your Gmail ID">
+    <input type="password" id="appPassword" placeholder="App Password">
     <button onclick="login()">Login</button>
   </div>
 
@@ -19,7 +19,7 @@
       const appPassword = document.getElementById("appPassword").value.trim();
 
       if (!email || !appPassword) {
-        alert("Please enter email and password.");
+        alert("Enter both Email and App Password!");
         return;
       }
 
