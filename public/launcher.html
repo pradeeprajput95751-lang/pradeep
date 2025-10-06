@@ -6,7 +6,6 @@
   <title>Bulk Mail Launcher</title>
   <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/732/732200.png" />
   <style>
-    /* ====== Reset ====== */
     * {
       margin: 0;
       padding: 0;
@@ -22,7 +21,6 @@
       height: 100vh;
     }
 
-    /* ====== Main Card ====== */
     .container {
       width: 90%;
       max-width: 1200px;
@@ -36,7 +34,6 @@
       gap: 30px;
     }
 
-    /* ====== Header ====== */
     .header {
       text-align: center;
       font-size: 26px;
@@ -52,7 +49,6 @@
       height: 28px;
     }
 
-    /* ====== Form ====== */
     form {
       width: 100%;
       display: grid;
@@ -86,7 +82,6 @@
       min-height: 140px;
     }
 
-    /* ====== Buttons ====== */
     .btn-group {
       width: 100%;
       display: flex;
@@ -108,6 +103,24 @@
 
     button:hover {
       background-color: #2563eb;
+    }
+
+    /* Red Sending State */
+    .sending {
+      background-color: #dc2626 !important;
+      color: white;
+    }
+
+    .popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #16a34a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      display: none;
     }
 
     @media (max-width: 768px) {
@@ -147,8 +160,14 @@
     </div>
   </div>
 
+  <div id="popup" class="popup">✅ All emails sent successfully!</div>
+
   <script>
     document.getElementById('sendBtn').addEventListener('click', async () => {
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.classList.add('sending');
+      sendBtn.innerText = 'Sending...';
+
       const senderName = document.getElementById('senderName').value.trim();
       const yourEmail = document.getElementById('yourEmail').value.trim();
       const appPassword = document.getElementById('appPassword').value.trim();
@@ -158,12 +177,12 @@
 
       if (!senderName || !yourEmail || !appPassword || !subject || !messageBody || !recipients) {
         alert('Please fill out all fields!');
+        sendBtn.classList.remove('sending');
+        sendBtn.innerText = 'Send All';
         return;
       }
 
       const emails = recipients.split(/[,;\n]+/).map(e => e.trim()).filter(e => e);
-
-      alert(`Sending ${emails.length} emails... Please wait.`);
 
       const response = await fetch('/send-bulk', {
         method: 'POST',
@@ -173,10 +192,15 @@
 
       const result = await response.json();
 
+      sendBtn.classList.remove('sending');
+      sendBtn.innerText = 'Send All';
+
       if (result.ok) {
-        alert(`✅ ${result.sentCount} emails sent successfully!`);
+        const popup = document.getElementById('popup');
+        popup.style.display = 'block';
+        setTimeout(() => popup.style.display = 'none', 4000);
       } else {
-        alert('❌ Failed to send emails. Please check your credentials or network.');
+        alert('❌ Failed to send emails.');
       }
     });
 
