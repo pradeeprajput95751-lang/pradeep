@@ -8,8 +8,6 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-
-// ✅ Correct path setup for Render & Local
 app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/send-bulk", async (req, res) => {
@@ -27,17 +25,14 @@ app.post("/send-bulk", async (req, res) => {
 
     let count = 0;
     for (const email of emails) {
-      const mailOptions = {
+      await transporter.sendMail({
         from: `"${senderName}" <${yourEmail}>`,
         to: email,
         subject,
         html: messageBody,
-      };
-
-      await transporter.sendMail(mailOptions);
+      });
       count++;
-
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((r) => setTimeout(r, 200)); // 0.2 sec delay
     }
 
     res.json({ ok: true, count });
@@ -47,12 +42,10 @@ app.post("/send-bulk", async (req, res) => {
   }
 });
 
-// ✅ Fix: Send login.html for root route (/)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-// ✅ Fallback for any other route
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
