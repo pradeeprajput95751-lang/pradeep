@@ -41,7 +41,7 @@ async function sendBulkEmails() {
 
   if (data.ok) {
     statusText.textContent = `✅ ${data.count} emails sent successfully!`;
-    statusText.style.color = "lime";
+    statusText.style.color = "green";
     alert(`✅ ${data.count} emails sent successfully!`);
   } else {
     statusText.textContent = `❌ ${data.error}`;
