@@ -1,7 +1,6 @@
 {
   "name": "bulk-mailer",
   "version": "3.0.0",
-  "description": "Bulk Mail Sender with custom login and 2-column UI",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
