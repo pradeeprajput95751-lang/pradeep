@@ -1,36 +1,106 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Login</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Bulk Mail Sender</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1d3557, #457b9d);
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #06d6a0;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #05b384;
+    }
+    .info {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #e0e0e0;
+    }
+    .info a {
+      color: #ffd166;
+    }
+  </style>
 </head>
 <body>
-  <div class="card center">
-    <h2>🔐 Login</h2>
-    <input id="user" placeholder="Username" value="pradeep" />
-    <input id="pass" placeholder="Password" type="password" value="12345" />
-    <button id="btn">Login</button>
-    <p id="msg"></p>
+  <div class="login-container">
+    <h2>Bulk Mail Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Enter Gmail ID" required />
+      <input type="password" id="password" placeholder="Enter App Password" required />
+      <button type="submit">Login</button>
+    </form>
+
+    <p class="info">
+      💡 Use your <b>Gmail App Password</b>.  
+      <br />
+      Get one here 👉 <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a>
+      <br /><br />
+      🧪 <b>Test Login:</b><br />
+      Email: <code>test@demo.com</code><br />
+      Pass: <code>12345</code>
+    </p>
   </div>
 
   <script>
-    async function post(url, data) {
-      const r = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data)
-      });
-      return r.json();
-    }
-    document.getElementById("btn").onclick = async () => {
-      const u = user.value, p = pass.value;
-      const res = await post("/api/login", { username: u, password: p });
-      if (res.success) location.href = "/launcher";
-      else msg.textContent = res.error || "Login failed";
-    };
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      // test login
+      if (email === "test@demo.com" && password === "12345") {
+        localStorage.setItem("yourEmail", email);
+        localStorage.setItem("appPassword", password);
+        alert("✅ Test login successful!");
+        window.location.href = "launcher.html";
+        return;
+      }
+
+      // gmail login
+      if (email && password) {
+        localStorage.setItem("yourEmail", email);
+        localStorage.setItem("appPassword", password);
+        alert("✅ Login successful!");
+        window.location.href = "launcher.html";
+      } else {
+        alert("❌ Please enter valid Gmail ID & App Password");
+      }
+    });
   </script>
 </body>
 </html>
