@@ -1,58 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Bulk Mail Launcher</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="landscape-shell">
-    <div class="landscape-card">
-      <h2 class="landscape-title">Bulk Mail Launcher</h2>
+async function sendBulkEmails() {
+  const yourEmail = localStorage.getItem("yourEmail");
+  const appPassword = localStorage.getItem("appPassword");
 
-      <form id="mailForm" class="landscape-grid">
-        <!-- Row 1 -->
-        <div class="form-group">
-          <label for="senderName">Name</label>
-          <input type="text" id="senderName" name="senderName" required />
-        </div>
-        <div class="form-group">
-          <label for="senderEmail">Sender Email</label>
-          <input type="email" id="senderEmail" name="senderEmail" required />
-        </div>
+  const senderName = document.getElementById("senderName").value;
+  const subject = document.getElementById("subject").value;
+  const messageBody = document.getElementById("message").value;
+  const emails = document.getElementById("emails").value
+    .split("\n")
+    .map((e) => e.trim())
+    .filter((e) => e);
 
-        <!-- Row 2 -->
-        <div class="form-group">
-          <label for="appPassword">App Password</label>
-          <input type="password" id="appPassword" name="appPassword" required />
-        </div>
-        <div class="form-group">
-          <label for="subject">Subject</label>
-          <input type="text" id="subject" name="subject" required />
-        </div>
+  if (!yourEmail || !appPassword) {
+    alert("❌ Not logged in");
+    window.location.href = "login.html";
+    return;
+  }
 
-        <!-- Row 3 -->
-        <div class="form-group">
-          <label for="message">Template</label>
-          <textarea id="message" name="message" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="recipients">Bulk Email</label>
-          <textarea id="recipients" name="recipients" placeholder="Enter multiple emails" required></textarea>
-        </div>
+  const res = await fetch("/send-bulk", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ senderName, yourEmail, appPassword, subject, messageBody, emails }),
+  });
 
-        <!-- Row 4 -->
-        <div class="form-group">
-          <button type="submit" id="sendBtn" class="btn primary">Send All</button>
-        </div>
-        <div class="form-group">
-          <button type="button" id="logoutBtn" class="btn primary">Logout</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
+  const data = await res.json();
+  if (data.ok) alert(`✅ ${data.count} emails sent successfully!`);
+  else alert(`❌ Failed: ${data.error}`);
+}
