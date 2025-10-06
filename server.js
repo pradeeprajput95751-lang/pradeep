@@ -1,53 +1,70 @@
-const express = require("express");
-const nodemailer = require("nodemailer");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
+const express = require('express');
+const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const path = require('path');
 
 const app = express();
-app.use(cors());
+app.use(express.static('public'));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(session({ secret: 'secret-key', resave: false, saveUninitialized: true }));
 
-app.post("/send-bulk", async (req, res) => {
+// Serve launcher page
+app.get('/launcher', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'launcher.html'));
+});
+
+// Send Bulk Emails
+app.post('/send-bulk', async (req, res) => {
+  const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
+  if (!yourEmail || !appPassword) {
+    return res.status(400).json({ ok: false, error: 'Not logged in' });
+  }
+
   try {
-    const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
-
-    if (!yourEmail || !appPassword) {
-      return res.status(400).json({ ok: false, error: "❌ Not logged in" });
-    }
-
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: yourEmail, pass: appPassword },
+      service: 'gmail',
+      auth: {
+        user: yourEmail,
+        pass: appPassword,
+      },
     });
 
-    let count = 0;
-    for (const email of emails) {
+    let sentCount = 0;
+
+    // Send 30 emails per 0.2 seconds
+    for (let i = 0; i < emails.length; i++) {
       const mailOptions = {
-        from: `"${senderName}" <${yourEmail}>`,
-        to: email,
-        subject,
-        html: messageBody,
+        from: `${senderName} <${yourEmail}>`,
+        to: emails[i],
+        subject: subject,
+        text: messageBody,
       };
 
-      await transporter.sendMail(mailOptions);
-      count++;
+      transporter.sendMail(mailOptions, (err) => {
+        if (err) console.log('❌', emails[i], err.message);
+        else console.log('✅ Sent to', emails[i]);
+      });
 
-      // delay 0.2 sec
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      sentCount++;
+
+      // Delay for 0.2 sec after every 30 emails
+      if (sentCount % 30 === 0) {
+        await new Promise((r) => setTimeout(r, 200));
+      }
     }
 
-    res.json({ ok: true, count });
+    res.json({ ok: true, sentCount });
   } catch (err) {
-    console.error("Mail error:", err);
-    res.status(500).json({ ok: false, error: err.message });
+    console.error(err);
+    res.json({ ok: false, error: err.message });
   }
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(3000, () => console.log('🚀 Server running on port 3000'));
