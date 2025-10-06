@@ -10,12 +10,22 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// ✅ Simple login check
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if (username === "Pradeep8923" && password === "Pradeep8923@") {
+    return res.json({ ok: true });
+  }
+  res.status(401).json({ ok: false, error: "Invalid username or password" });
+});
+
+// ✅ Send bulk emails
 app.post("/send-bulk", async (req, res) => {
   try {
     const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
 
     if (!yourEmail || !appPassword) {
-      return res.status(400).json({ ok: false, error: "❌ Not logged in" });
+      return res.status(400).json({ ok: false, error: "Missing credentials" });
     }
 
     const transporter = nodemailer.createTransport({
@@ -37,11 +47,12 @@ app.post("/send-bulk", async (req, res) => {
 
     res.json({ ok: true, count });
   } catch (err) {
-    console.error("Send error:", err);
+    console.error(err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
+// ✅ Routes
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
