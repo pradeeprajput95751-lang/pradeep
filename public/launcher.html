@@ -1,76 +1,40 @@
-async function sendBulkEmails() {
-  const sendBtn = document.getElementById("sendBtn");
-  const statusText = document.getElementById("statusText");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bulk Mail Launcher</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="launcher-page">
+  <div class="container">
+    <h1>🚀 Bulk Mail Sender</h1>
 
-  // UI feedback start
-  sendBtn.disabled = true;
-  sendBtn.style.background = "red";
-  statusText.innerText = "📨 Sending...";
-  statusText.style.color = "red";
+    <div class="form-group">
+      <label>Sender Name:</label>
+      <input type="text" id="senderName" placeholder="Your name or company" />
+    </div>
 
-  try {
-    const yourEmail = localStorage.getItem("yourEmail");
-    const appPassword = localStorage.getItem("appPassword");
+    <div class="form-group">
+      <label>Email Subject:</label>
+      <input type="text" id="subject" placeholder="Subject line" />
+    </div>
 
-    const senderName = document.getElementById("senderName").value;
-    const subject = document.getElementById("subject").value;
-    const messageBody = document.getElementById("message").value;
-    const emails = document
-      .getElementById("emails")
-      .value.split("\n")
-      .map((e) => e.trim())
-      .filter((e) => e);
+    <div class="form-group">
+      <label>Message:</label>
+      <textarea id="message" placeholder="Write your message here..."></textarea>
+    </div>
 
-    if (!yourEmail || !appPassword) {
-      alert("❌ Not logged in — please sign in again!");
-      window.location.href = "login.html";
-      return;
-    }
+    <div class="form-group">
+      <label>Recipient Emails (one per line):</label>
+      <textarea id="emails" placeholder="user1@gmail.com&#10;user2@gmail.com"></textarea>
+    </div>
 
-    if (emails.length === 0) {
-      alert("⚠️ No email addresses entered!");
-      return;
-    }
+    <button id="sendBtn" onclick="sendBulkEmails()">Send All</button>
+    <p id="statusText" style="margin-top:10px; font-weight:bold;"></p>
 
-    // Start sending
-    const res = await fetch("/send-bulk", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        senderName,
-        yourEmail,
-        appPassword,
-        subject,
-        messageBody,
-        emails,
-      }),
-    });
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
 
-    // Parse server response safely
-    let data;
-    try {
-      data = await res.json();
-    } catch (err) {
-      console.error("Invalid JSON from server:", err);
-      alert("❌ Server returned invalid response.");
-      return;
-    }
-
-    if (res.ok && data.ok) {
-      statusText.innerText = "✅ Sent successfully!";
-      statusText.style.color = "green";
-      alert(`✅ ${data.count} emails sent successfully!`);
-    } else {
-      throw new Error(data.error || "Unknown server error");
-    }
-  } catch (error) {
-    console.error("Error sending emails:", error);
-    alert(`❌ Failed to send: ${error.message}`);
-    statusText.innerText = "❌ Failed!";
-    statusText.style.color = "red";
-  } finally {
-    // Reset button state
-    sendBtn.disabled = false;
-    sendBtn.style.background = "#007bff";
-  }
-}
+  <script src="script.js"></script>
+</body>
+</html>
