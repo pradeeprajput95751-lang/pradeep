@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Poppins, Arial, sans-serif;
-  background: linear-gradient(120deg, #1f1c2c, #928dab);
+  background: linear-gradient(120deg, #141e30, #243b55);
   color: white;
   display: flex;
   justify-content: center;
@@ -43,23 +43,32 @@ body {
 
 /* Launcher Page */
 .main-box {
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   padding: 25px 40px;
   border-radius: 16px;
   width: 90%;
-  max-width: 1000px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  max-width: 1100px;
   box-shadow: 0 0 20px rgba(0,0,0,0.6);
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+label {
+  margin-top: 10px;
+  font-weight: bold;
 }
 
 input, textarea {
+  width: 100%;
   padding: 10px;
   border-radius: 8px;
   border: none;
@@ -67,23 +76,39 @@ input, textarea {
   resize: none;
 }
 
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
 button {
-  padding: 14px;
+  padding: 14px 25px;
   background: #007bff;
   border: none;
   color: white;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
 }
 button:hover { background: #0056b3; }
 
-.logout {
+#sendBtn {
+  flex: 1;
+  margin-right: 10px;
+}
+
+#logoutBtn {
+  flex: 1;
   background: crimson;
 }
-.logout:hover { background: darkred; }
+#logoutBtn:hover {
+  background: darkred;
+}
 
 #statusText {
-  font-weight: bold;
   text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
 }
