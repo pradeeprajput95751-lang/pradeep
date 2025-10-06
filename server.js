@@ -10,7 +10,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Simple login check
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (username === "Pradeep8923" && password === "Pradeep8923@") {
@@ -19,11 +18,9 @@ app.post("/login", (req, res) => {
   res.status(401).json({ ok: false, error: "Invalid username or password" });
 });
 
-// ✅ Send bulk emails
 app.post("/send-bulk", async (req, res) => {
   try {
     const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
-
     if (!yourEmail || !appPassword) {
       return res.status(400).json({ ok: false, error: "Missing credentials" });
     }
@@ -42,17 +39,15 @@ app.post("/send-bulk", async (req, res) => {
         html: messageBody,
       });
       count++;
-      await new Promise((r) => setTimeout(r, 200)); // 0.2 sec delay
+      await new Promise((r) => setTimeout(r, 200));
     }
 
     res.json({ ok: true, count });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
-// ✅ Routes
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
