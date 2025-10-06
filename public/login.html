@@ -2,105 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Bulk Mail Sender</title>
-  <style>
-    body {
-      background: linear-gradient(135deg, #1d3557, #457b9d);
-      font-family: "Segoe UI", sans-serif;
-      color: #fff;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .login-container {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 40px;
-      border-radius: 12px;
-      width: 350px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-    .login-container h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #06d6a0;
-      color: #fff;
-      font-size: 18px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #05b384;
-    }
-    .info {
-      font-size: 14px;
-      margin-top: 10px;
-      color: #e0e0e0;
-    }
-    .info a {
-      color: #ffd166;
-    }
-  </style>
+  <title>Login - Bulk Mailer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="login-container">
-    <h2>Bulk Mail Login</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Enter Gmail ID" required />
-      <input type="password" id="password" placeholder="Enter App Password" required />
-      <button type="submit">Login</button>
-    </form>
-
-    <p class="info">
-      💡 Use your <b>Gmail App Password</b>.  
-      <br />
-      Get one here 👉 <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a>
-      <br /><br />
-      🧪 <b>Test Login:</b><br />
-      Email: <code>test@demo.com</code><br />
-      Pass: <code>12345</code>
-    </p>
+<body class="login-page">
+  <div class="login-box">
+    <h2>Login to Bulk Mailer</h2>
+    <input type="email" id="email" placeholder="Your Gmail" />
+    <input type="password" id="appPassword" placeholder="App Password" />
+    <button onclick="login()">Login</button>
   </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
-      e.preventDefault();
+    function login() {
       const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+      const appPassword = document.getElementById("appPassword").value.trim();
 
-      // test login
-      if (email === "test@demo.com" && password === "12345") {
-        localStorage.setItem("yourEmail", email);
-        localStorage.setItem("appPassword", password);
-        alert("✅ Test login successful!");
-        window.location.href = "launcher.html";
+      if (!email || !appPassword) {
+        alert("Please enter email and password.");
         return;
       }
 
-      // gmail login
-      if (email && password) {
-        localStorage.setItem("yourEmail", email);
-        localStorage.setItem("appPassword", password);
-        alert("✅ Login successful!");
-        window.location.href = "launcher.html";
-      } else {
-        alert("❌ Please enter valid Gmail ID & App Password");
-      }
-    });
+      localStorage.setItem("yourEmail", email);
+      localStorage.setItem("appPassword", appPassword);
+      window.location.href = "launcher.html";
+    }
   </script>
 </body>
 </html>
