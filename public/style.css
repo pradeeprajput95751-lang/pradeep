@@ -1,0 +1,86 @@
+body {
+  font-family: Poppins, Arial, sans-serif;
+  margin: 0;
+  background: white;
+  color: #333;
+}
+
+/* LOGIN */
+.login-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.login-box {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+.login-box input {
+  display: block;
+  margin: 10px auto;
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+.login-box button {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* LAUNCHER */
+.mail-container {
+  width: 90%;
+  max-width: 1100px;
+  margin: 30px auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+.mail-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.form-grid textarea, .form-grid input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+button {
+  padding: 12px 25px;
+  background: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover {
+  background: #0056b3;
+}
+#statusText {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+}
