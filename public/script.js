@@ -1,82 +1,49 @@
-async function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const status = document.getElementById("login-status");
-
-  status.textContent = "⏳ Logging in...";
-
-  try {
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-
-    const data = await res.json();
-
-    if (data.ok) {
-      localStorage.setItem("loggedIn", "true");
-      alert("✅ Login successful!");
-      window.location.href = "launcher.html";
-    } else {
-      status.textContent = "❌ Invalid username or password";
-      status.style.color = "red";
-    }
-  } catch (err) {
-    status.textContent = "⚠️ Server error: " + err.message;
-    status.style.color = "red";
-  }
+function logout() {
+  fetch('/logout', { method: 'POST' })
+    .then(() => window.location.href = '/');
 }
 
-// ---------- SEND BULK EMAILS ----------
-async function sendBulkEmails() {
-  const senderName = document.getElementById("senderName").value;
-  const yourEmail = document.getElementById("yourEmail").value;
-  const appPassword = document.getElementById("appPassword").value;
-  const subject = document.getElementById("subject").value;
-  const messageBody = document.getElementById("message").value;
-  const emails = document.getElementById("emails").value
-    .split("\n")
-    .map((e) => e.trim())
-    .filter((e) => e);
+document.getElementById('sendBtn')?.addEventListener('click', () => {
+  const senderName = document.getElementById('senderName').value;
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('pass').value.trim();
+  const subject = document.getElementById('subject').value;
+  const message = document.getElementById('message').value;
+  const recipients = document.getElementById('recipients').value.trim();
+  const status = document.getElementById('statusMessage');
 
-  const btn = document.getElementById("sendBtn");
-  const statusText = document.getElementById("statusText");
+  if (!email || !password || !recipients) {
+    status.innerText = '❌ Email, password and recipients required';
+    alert('❌ Email, password and recipients required');
+    return;
+  }
 
+  const btn = document.getElementById('sendBtn');
   btn.disabled = true;
-  btn.style.background = "red";
-  statusText.textContent = "📨 Sending...";
-  statusText.style.color = "red";
+  btn.innerText = '⏳ Sending...';
 
-  const res = await fetch("/send-bulk", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ senderName, yourEmail, appPassword, subject, messageBody, emails }),
-  });
+  fetch('/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ senderName, email, password, subject, message, recipients })
+  })
+    .then(r => r.json())
+    .then(data => {
+      status.innerText = data.message;
 
-  const data = await res.json();
-  btn.disabled = false;
-  btn.style.background = "#007bff";
+      if (data.success) {
+        alert('✅ Mail sent successfully!');
+      } else {
+        alert('❌ Failed: ' + data.message);
+      }
 
-  if (data.ok) {
-    statusText.textContent = `✅ ${data.count} emails sent successfully!`;
-    statusText.style.color = "green";
-    alert(`✅ ${data.count} emails sent successfully!`);
-  } else {
-    statusText.textContent = `❌ Failed: ${data.error}`;
-    statusText.style.color = "red";
-    alert(`❌ ${data.error}`);
-  }
-}
-
-// ---------- LOGOUT ----------
-function handleLogout() {
-  if (localStorage.getItem("logoutClick") === "1") {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("logoutClick");
-    window.location.href = "login.html";
-  } else {
-    localStorage.setItem("logoutClick", "1");
-    alert("⚠️ Click again to confirm logout!");
-  }
-}
+      btn.disabled = false;
+      btn.innerText = 'Send All';
+    })
+    .catch(err => {
+      status.innerText = '❌ Error: ' + err.message;
+      alert('❌ Error: ' + err.message);
+      btn.disabled = false;
+      btn.innerText = 'Send All';
+    });
+});
