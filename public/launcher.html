@@ -2,16 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login</title>
+  <title>Bulk Mail Sender</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="white-bg">
-  <div class="login-container">
-    <h2>Login Panel</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
+<body>
+  <div class="main-container">
+    <h2>🚀 Bulk Mail Sender</h2>
+
+    <div class="grid-container">
+      <div><label>Sender Name</label><input id="senderName" type="text"></div>
+      <div><label>Your Email</label><input id="yourEmail" type="email"></div>
+      <div><label>App Password</label><input id="appPassword" type="password"></div>
+      <div><label>Subject</label><input id="subject" type="text"></div>
+      <div><label>Template (Use {{name}})</label><textarea id="message"></textarea></div>
+      <div><label>Bulk Emails (one per line)</label><textarea id="emails"></textarea></div>
+    </div>
+
+    <div class="buttons">
+      <button id="sendBtn" onclick="sendBulkEmails()">📨 Send All</button>
+      <button id="logoutBtn" onclick="handleLogout()">🚪 Logout</button>
+    </div>
+    <p id="statusText"></p>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
