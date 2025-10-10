@@ -1,23 +1,34 @@
 async function login() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
+  const status = document.getElementById("login-status");
 
-  const res = await fetch("/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+  status.textContent = "⏳ Logging in...";
 
-  const data = await res.json();
-  if (data.ok) {
-    localStorage.setItem("loggedIn", "true");
-    alert("✅ Login Successful!");
-    window.location.href = "launcher.html";
-  } else {
-    alert("❌ Invalid login details!");
+  try {
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+
+    if (data.ok) {
+      localStorage.setItem("loggedIn", "true");
+      alert("✅ Login successful!");
+      window.location.href = "launcher.html";
+    } else {
+      status.textContent = "❌ Invalid username or password";
+      status.style.color = "red";
+    }
+  } catch (err) {
+    status.textContent = "⚠️ Server error: " + err.message;
+    status.style.color = "red";
   }
 }
 
+// ---------- SEND BULK EMAILS ----------
 async function sendBulkEmails() {
   const senderName = document.getElementById("senderName").value;
   const yourEmail = document.getElementById("yourEmail").value;
@@ -30,8 +41,12 @@ async function sendBulkEmails() {
     .filter((e) => e);
 
   const btn = document.getElementById("sendBtn");
-  btn.textContent = "⏳ Sending...";
+  const statusText = document.getElementById("statusText");
+
   btn.disabled = true;
+  btn.style.background = "red";
+  statusText.textContent = "📨 Sending...";
+  statusText.style.color = "red";
 
   const res = await fetch("/send-bulk", {
     method: "POST",
@@ -40,23 +55,28 @@ async function sendBulkEmails() {
   });
 
   const data = await res.json();
-  btn.textContent = "📨 Send All";
   btn.disabled = false;
+  btn.style.background = "#007bff";
 
   if (data.ok) {
+    statusText.textContent = `✅ ${data.count} emails sent successfully!`;
+    statusText.style.color = "green";
     alert(`✅ ${data.count} emails sent successfully!`);
   } else {
-    alert(`❌ Failed: ${data.error}`);
+    statusText.textContent = `❌ Failed: ${data.error}`;
+    statusText.style.color = "red";
+    alert(`❌ ${data.error}`);
   }
 }
 
+// ---------- LOGOUT ----------
 function handleLogout() {
   if (localStorage.getItem("logoutClick") === "1") {
-    localStorage.removeItem("logoutClick");
     localStorage.removeItem("loggedIn");
+    localStorage.removeItem("logoutClick");
     window.location.href = "login.html";
   } else {
     localStorage.setItem("logoutClick", "1");
-    alert("⚠️ Click logout again to confirm!");
+    alert("⚠️ Click again to confirm logout!");
   }
 }
