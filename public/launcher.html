@@ -1,49 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>🚀 Bulk Mail Sender</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="launcher-body">
-  <div class="mail-container">
-    <h1>🚀 Bulk Mail Sender</h1>
-
-    <div class="form-grid">
-      <div>
-        <label>Name</label>
-        <input id="senderName" type="text" placeholder="Your Name">
-      </div>
-      <div>
-        <label>Sender Email</label>
-        <input id="yourEmail" type="email" placeholder="Your Gmail ID">
-      </div>
-      <div>
-        <label>App Password</label>
-        <input id="appPassword" type="password" placeholder="Gmail App Password">
-      </div>
-      <div>
-        <label>Subject</label>
-        <input id="subject" type="text" placeholder="Mail Subject">
-      </div>
-      <div>
-        <label>Template</label>
-        <textarea id="message" rows="5" placeholder="Mail Message"></textarea>
-      </div>
-      <div>
-        <label>Bulk Emails</label>
-        <textarea id="emails" rows="5" placeholder="user1@gmail.com&#10;user2@gmail.com"></textarea>
-      </div>
-    </div>
-
-    <div class="buttons">
-      <button id="sendBtn" onclick="sendBulkEmails()">📨 Send All</button>
-      <button id="logoutBtn" onclick="logout()">🚪 Logout</button>
-    </div>
-
-    <p id="statusText"></p>
+<body class="white-bg">
+  <div class="login-container">
+    <h2>Login Panel</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
