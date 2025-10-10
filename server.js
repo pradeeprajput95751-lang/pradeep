@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
 const nodemailer = require("nodemailer");
+const cors = require("cors");
 const path = require("path");
 
 const app = express();
@@ -14,50 +14,43 @@ app.post("/login", (req, res) => {
   if (username === "Pradeep8923" && password === "Pradeep8923@") {
     return res.json({ ok: true });
   }
-  res.status(401).json({ ok: false, error: "Invalid username or password" });
+  return res.status(401).json({ ok: false, error: "Invalid username or password" });
 });
 
 app.post("/send-bulk", async (req, res) => {
-  try {
-    const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
+  const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
+  if (!yourEmail || !appPassword || !emails?.length) {
+    return res.status(400).json({ ok: false, error: "Missing fields" });
+  }
 
-    console.log("📧 Sending mails from:", yourEmail);
-    console.log("Total emails:", emails.length);
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: yourEmail, pass: appPassword },
+  });
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: yourEmail,
-        pass: appPassword
-      }
-    });
+  let results = [];
 
-    let sent = 0;
-    let failed = 0;
-
-    for (const email of emails) {
+  // Send all mails in parallel (fast!)
+  await Promise.all(
+    emails.map(async (email) => {
+      const namePart = email.split("@")[0];
+      const customizedMessage = messageBody.replace(/{{name}}/g, namePart);
       try {
         await transporter.sendMail({
           from: `"${senderName}" <${yourEmail}>`,
           to: email,
           subject,
-          html: messageBody
+          html: customizedMessage,
         });
-        console.log("✅ Sent to:", email);
-        sent++;
-        await new Promise((r) => setTimeout(r, 100)); // faster delay
+        results.push({ to: email, ok: true });
       } catch (e) {
-        console.error("❌ Failed for:", email, e.message);
-        failed++;
+        results.push({ to: email, ok: false, error: e.message });
       }
-    }
+    })
+  );
 
-    console.log(`Done ✅ Sent: ${sent}, Failed: ${failed}`);
-    res.json({ ok: true, count: sent, failed });
-  } catch (err) {
-    console.error("🚨 SERVER ERROR:", err);
-    res.status(500).json({ ok: false, error: err.message });
-  }
+  const sentCount = results.filter((r) => r.ok).length;
+  res.json({ ok: true, count: sentCount });
 });
 
 app.get("/", (req, res) => {
@@ -65,4 +58,4 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("✅ Server running on port " + PORT));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
