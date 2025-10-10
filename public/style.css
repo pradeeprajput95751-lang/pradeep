@@ -6,10 +6,6 @@ body {
   padding: 0;
 }
 
-.white-bg {
-  background-color: white;
-}
-
 .login-container, .main-container {
   width: 80%;
   max-width: 900px;
@@ -20,7 +16,7 @@ body {
   border-radius: 10px;
 }
 
-.login-container input {
+input, textarea {
   width: 100%;
   padding: 10px;
   margin: 8px 0;
@@ -49,9 +45,7 @@ button:hover {
 }
 
 textarea {
-  width: 100%;
   height: 100px;
-  padding: 10px;
   resize: vertical;
 }
 
