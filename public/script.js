@@ -21,6 +21,8 @@ async function sendBulkEmails() {
 
   if (!yourEmail || !appPassword) {
     alert("❌ Please enter Email and App Password");
+    sendBtn.disabled = false;
+    sendBtn.style.background = "#007bff";
     return;
   }
 
@@ -46,6 +48,7 @@ async function sendBulkEmails() {
   } else {
     statusText.textContent = `❌ ${data.error}`;
     statusText.style.color = "red";
+    alert(`❌ ${data.error}`);
   }
 
   sendBtn.disabled = false;
