@@ -21,10 +21,11 @@ app.post("/send-bulk", async (req, res) => {
   try {
     const { senderName, yourEmail, appPassword, subject, messageBody, emails } = req.body;
 
+    console.log("📧 Sending mails from:", yourEmail);
+    console.log("Total emails:", emails.length);
+
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      service: "gmail",
       auth: {
         user: yourEmail,
         pass: appPassword
@@ -32,6 +33,8 @@ app.post("/send-bulk", async (req, res) => {
     });
 
     let sent = 0;
+    let failed = 0;
+
     for (const email of emails) {
       try {
         await transporter.sendMail({
@@ -40,15 +43,19 @@ app.post("/send-bulk", async (req, res) => {
           subject,
           html: messageBody
         });
+        console.log("✅ Sent to:", email);
         sent++;
-        await new Promise((r) => setTimeout(r, 100)); // 0.1 sec delay
+        await new Promise((r) => setTimeout(r, 100)); // faster delay
       } catch (e) {
-        console.error("❌ Error sending to:", email, e.message);
+        console.error("❌ Failed for:", email, e.message);
+        failed++;
       }
     }
 
-    res.json({ ok: true, count: sent });
+    console.log(`Done ✅ Sent: ${sent}, Failed: ${failed}`);
+    res.json({ ok: true, count: sent, failed });
   } catch (err) {
+    console.error("🚨 SERVER ERROR:", err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
