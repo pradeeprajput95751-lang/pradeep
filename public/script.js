@@ -1,51 +1,62 @@
-let logoutClicks = 0;
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  const data = await res.json();
+  if (data.ok) {
+    localStorage.setItem("loggedIn", "true");
+    alert("✅ Login Successful!");
+    window.location.href = "launcher.html";
+  } else {
+    alert("❌ Invalid login details!");
+  }
+}
 
 async function sendBulkEmails() {
-  const sendBtn = document.getElementById("sendBtn");
-  const statusText = document.getElementById("statusText");
-  sendBtn.disabled = true;
-  sendBtn.style.background = "red";
-  statusText.textContent = "📤 Sending...";
-  statusText.style.color = "orange";
-
-  const yourEmail = document.getElementById("yourEmail").value.trim();
-  const appPassword = document.getElementById("appPassword").value.trim();
-  const senderName = document.getElementById("senderName").value.trim();
-  const subject = document.getElementById("subject").value.trim();
-  const messageBody = document.getElementById("message").value.trim();
+  const senderName = document.getElementById("senderName").value;
+  const yourEmail = document.getElementById("yourEmail").value;
+  const appPassword = document.getElementById("appPassword").value;
+  const subject = document.getElementById("subject").value;
+  const messageBody = document.getElementById("message").value;
   const emails = document.getElementById("emails").value
     .split("\n")
-    .map(e => e.trim())
-    .filter(Boolean);
+    .map((e) => e.trim())
+    .filter((e) => e);
+
+  const btn = document.getElementById("sendBtn");
+  btn.textContent = "⏳ Sending...";
+  btn.disabled = true;
 
   const res = await fetch("/send-bulk", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ senderName, yourEmail, appPassword, subject, messageBody, emails })
+    body: JSON.stringify({ senderName, yourEmail, appPassword, subject, messageBody, emails }),
   });
 
   const data = await res.json();
+  btn.textContent = "📨 Send All";
+  btn.disabled = false;
 
   if (data.ok) {
-    statusText.textContent = `✅ ${data.count} emails sent successfully!`;
-    statusText.style.color = "green";
     alert(`✅ ${data.count} emails sent successfully!`);
   } else {
-    statusText.textContent = `❌ ${data.error}`;
-    statusText.style.color = "red";
-    alert(`❌ ${data.error}`);
+    alert(`❌ Failed: ${data.error}`);
   }
-
-  sendBtn.disabled = false;
-  sendBtn.style.background = "#007bff";
 }
 
-function logout() {
-  logoutClicks++;
-  if (logoutClicks >= 2) {
-    localStorage.clear();
+function handleLogout() {
+  if (localStorage.getItem("logoutClick") === "1") {
+    localStorage.removeItem("logoutClick");
+    localStorage.removeItem("loggedIn");
     window.location.href = "login.html";
   } else {
-    alert("Click again to confirm logout!");
+    localStorage.setItem("logoutClick", "1");
+    alert("⚠️ Click logout again to confirm!");
   }
 }
