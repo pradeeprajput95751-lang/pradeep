@@ -31,15 +31,17 @@ app.post("/send-bulk", async (req, res) => {
     });
 
     let count = 0;
+
+    // ⚡ Parallel + fast sending (no heavy delay)
     for (const email of emails) {
-      await transporter.sendMail({
+      transporter.sendMail({
         from: `"${senderName}" <${yourEmail}>`,
         to: email,
         subject,
         html: messageBody,
-      });
+      }).then(() => {}).catch(() => {});
       count++;
-      await new Promise((r) => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 50)); // ⚡ only 50ms delay between mails
     }
 
     res.json({ ok: true, count });
