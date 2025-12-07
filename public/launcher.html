@@ -1,37 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Fast Mail Launcher</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="form-grid">
-  <h2>📧 Fast Mail Launcher</h2>
+import React, { useState } from "react";
+import "./launcher.css";
 
-  <div class="grid-row">
-    <input id="senderName" placeholder="Sender Name">
-    <input id="email" placeholder="Your Gmail">
-  </div>
+const Launcher = () => {
+  const [form, setForm] = useState({
+    senderName: "",
+    gmail: "",
+    appPassword: "",
+    subject: "",
+    message: "",
+    recipients: "",
+  });
 
-  <div class="grid-row">
-    <input id="pass" type="password" placeholder="App Password">
-    <input id="subject" placeholder="Subject">
-  </div>
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  <div class="grid-row">
-    <textarea id="message" placeholder="Message Body"></textarea>
-    <textarea id="recipients" placeholder="Recipients (comma or newline)"></textarea>
-  </div>
+  const sendMail = async () => {
+    const recipientsList = form.recipients
+      .split(/\r?\n|,/)
+      .map(r => r.trim())
+      .filter(Boolean);
 
-  <div class="grid-row">
-    <button id="sendBtn">Send All</button>
-    <button onclick="logout()">Logout</button>
-  </div>
+    const res = await fetch("http://localhost:5000/send-bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form, recipients: recipientsList })
+    });
 
-  <p id="statusMessage"></p>
-</div>
+    alert(await res.text());
+  };
 
-<script src="script.js"></script>
-</body>
-</html>
+  return (
+    <div className="container">
+      <h1>📧 Fast Mail Launcher</h1>
+
+      <div className="row">
+        <input
+          type="text"
+          name="senderName"
+          placeholder="Sender Name"
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          name="gmail"
+          placeholder="Your Gmail"
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="row">
+        <input
+          type="password"
+          name="appPassword"
+          placeholder="App Password"
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="subject"
+          placeholder="Email Subject"
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="row">
+        <textarea
+          name="message"
+          placeholder="Message Body"
+          onChange={handleChange}
+        ></textarea>
+
+        <textarea
+          name="recipients"
+          placeholder="Recipients (comma or newline)"
+          onChange={handleChange}
+        ></textarea>
+      </div>
+
+      <button onClick={sendMail}>Send All</button>
+    </div>
+  );
+};
+
+export default Launcher;
